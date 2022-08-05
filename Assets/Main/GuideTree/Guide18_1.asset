@@ -1,0 +1,89 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b23f08d2ae4cba14087c1ed36193d82b, type: 3}
+  m_Name: Guide18_1
+  m_EditorClassIdentifier: 
+  mBehaviorSource:
+    behaviorName: Behavior
+    behaviorDescription: 
+    mTaskData:
+      types: []
+      parentIndex: 
+      startIndex: 
+      variableStartIndex: 
+      JSONSerialization: '{"EntryTask":{"Type":"BehaviorDesigner.Runtime.Tasks.EntryTask","NodeData":{"Offset":"(627.5063,159.552612)"},"ID":0,"Name":"Entry","Instant":true},"RootTask":{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-0.339395523,140.17746)"},"ID":1,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(-849.3688,125.1775)"},"ID":2,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-181.789841,125.586052)"},"ID":3,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018001},{"Type":"BehaviorDesigner.Runtime.Tasks.Inverter","NodeData":{"Offset":"(4.94493961,125.586052)"},"ID":4,"Name":"Inverter","Instant":true,"Children":[{"Type":"Game.IsCompleteSpecifyStep","NodeData":{"Offset":"(0.2510376,106.198364)","Comment":"\u4e0d\u77e5\u9053\u7b2c\u4e00\u4e2a\u91c7\u96c6\u7684\u4efb\u52a1id\uff01\uff01\uff01\uff01\uff01\uff01\uff01"},"ID":5,"Name":"Is
+        Complete Specify Step","Instant":true,"Int32stepID":1018003}]},{"Type":"Game.SkipSteps","NodeData":{"Offset":"(171.883682,166.40239)"},"ID":6,"Name":"Skip
+        Steps","Instant":true,"List`1skipSteps":[1018001,1018002,1018003]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(-691.4016,118.451454)","Comment":"\u6b65\u9aa41018001","Collapsed":true},"ID":7,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-196.031,161.470352)"},"ID":8,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018001},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-32.8387222,161.46553)"},"ID":9,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsPlaying","NodeData":{"Offset":"(-84.95877,160.074158)"},"ID":10,"Name":"Guide
+        Step Is Playing","Instant":true,"Int32stepID":1018001},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(67.1689453,164.32959)"},"ID":11,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Inverter","NodeData":{"Offset":"(-98.91077,140.248047)"},"ID":12,"Name":"Inverter","Instant":true,"Children":[{"Type":"Game.EndOfPlotDialog","NodeData":{"Offset":"(2.94107056,105.639404)"},"ID":13,"Name":"End
+        Of Plot Dialog","Instant":true}]},{"Type":"Game.GuideStepComplete","NodeData":{"Offset":"(71.48053,150.284271)"},"ID":14,"Name":"Guide
+        Step Complete","Instant":true}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(310.3347,157.272736)"},"ID":15,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.InSpecifyTypeScene","NodeData":{"Offset":"(-96.99277,156.2984)"},"ID":16,"Name":"In
+        Specify Type Scene","Instant":true,"SceneTypesceneType":"MainCity"},{"Type":"Game.GuideStepStart","NodeData":{"Offset":"(55.41479,164.247986)"},"ID":17,"Name":"Guide
+        Step Start","Instant":true,"Int32guideId":1018001},{"Type":"Game.PlayPoltDialog","NodeData":{"Offset":"(210.869568,160)"},"ID":18,"Name":"Play
+        Polt Dialog","Instant":true}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-459.5052,118.064484)","Comment":"\u6b65\u9aa41018002","Collapsed":true},"ID":19,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-139.338531,115.286621)"},"ID":20,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018001},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(153.9695,124.493614)"},"ID":21,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-344.330536,156.07135)"},"ID":22,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018002},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-136.0833,156.07135)"},"ID":23,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsPlaying","NodeData":{"Offset":"(-78.57184,156.07135)"},"ID":24,"Name":"Guide
+        Step Is Playing","Instant":true,"Int32stepID":1018002},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(71.42816,156.07135)"},"ID":25,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Inverter","NodeData":{"Offset":"(-98.57184,136.07135)"},"ID":26,"Name":"Inverter","Instant":true,"Children":[{"Type":"Game.InSpecifyTypeScene","NodeData":{"Offset":"(-3.564392,138.706909)"},"ID":27,"Name":"In
+        Specify Type Scene","Instant":true,"SceneTypesceneType":"NewChapter"}]},{"Type":"Game.GuideStepComplete","NodeData":{"Offset":"(68.81946,136.07135)"},"ID":28,"Name":"Guide
+        Step Complete","Instant":true}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(247.1614,156.07135)"},"ID":29,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepStart","NodeData":{"Offset":"(-3.3394928,126.086914)"},"ID":30,"Name":"Guide
+        Step Start","Instant":true,"Int32guideId":1018002},{"Type":"Game.OpenGuidanceWindow","NodeData":{"Offset":"(229.981155,129.11792)"},"ID":31,"Name":"Open
+        Guidance Window","Instant":true}]}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-225.859009,120.171387)","Comment":"\u6b65\u9aa41018003","Collapsed":true},"ID":32,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-107.959412,118.571632)"},"ID":33,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018002},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(108.367126,118.367546)"},"ID":34,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-199.796173,159.38797)"},"ID":35,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018003},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-2.85736084,159.38797)"},"ID":36,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsPlaying","NodeData":{"Offset":"(-82.85736,139.796143)"},"ID":37,"Name":"Guide
+        Step Is Playing","Instant":true,"Int32stepID":1018003},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(67.14264,139.796143)"},"ID":38,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Inverter","NodeData":{"Offset":"(-82.85736,139.796143)"},"ID":39,"Name":"Inverter","Instant":true,"Children":[{"Type":"Game.SpecifyGatherCompleted","NodeData":{"Offset":"(-2.85736084,139.796143)"},"ID":40,"Name":"Specify
+        Gather Completed","Instant":true}]},{"Type":"Game.GuideStepComplete","NodeData":{"Offset":"(67.14264,139.796143)"},"ID":41,"Name":"Guide
+        Step Complete","Instant":true}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(357.1426,159.796143)"},"ID":42,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.SwitchCutStep","NodeData":{"Offset":"(-172.857361,159.796143)"},"ID":43,"Name":"Switch
+        Cut Step","Instant":true,"Int32stepId":1018003},{"Type":"Game.CurSceneHasSpecifyGather","NodeData":{"Offset":"(-2.85736084,159.796143)"},"ID":44,"Name":"Cur
+        Scene Has Specify Gather","Instant":true},{"Type":"Game.WindowIsClose","NodeData":{"Offset":"(167.142639,159.796143)"},"ID":45,"Name":"Window
+        Is Close","Instant":true,"StringwindowName":"Loading"},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(297.142578,159.796143)"},"ID":46,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepStart","NodeData":{"Offset":"(-222.857361,139.796143)"},"ID":47,"Name":"Guide
+        Step Start","Instant":true,"Int32guideId":1018003},{"Type":"Game.MoveCameraOnObj","NodeData":{"Offset":"(-82.85742,139.796143)"},"ID":48,"Name":"Move
+        Camera On Obj","Instant":true},{"Type":"Game.EffectObjCreate","NodeData":{"Offset":"(67.14258,139.796143)"},"ID":49,"Name":"Effect
+        Obj Create","Instant":true},{"Type":"Game.OpenGuidanceWindow","NodeData":{"Offset":"(237.142578,139.796143)"},"ID":50,"Name":"Open
+        Guidance Window","Instant":true}]}]}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(-0.33930397,123.174942)","Comment":"\u6b65\u9aa41018004","Collapsed":true},"ID":51,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-116.170135,178.936371)"},"ID":52,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018003},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(82.55332,189.574661)"},"ID":53,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-197.659637,160)"},"ID":54,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018004},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(2.340454,160)"},"ID":55,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsPlaying","NodeData":{"Offset":"(-77.65958,140)"},"ID":56,"Name":"Guide
+        Step Is Playing","Instant":true,"Int32stepID":1018004},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(72.3404541,140)"},"ID":57,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Inverter","NodeData":{"Offset":"(-77.6595459,140)"},"ID":58,"Name":"Inverter","Instant":true,"Children":[{"Type":"Game.SpecifyGatherCompleted","NodeData":{"Offset":"(2.340454,140)"},"ID":59,"Name":"Specify
+        Gather Completed","Instant":true}]},{"Type":"Game.GuideStepComplete","NodeData":{"Offset":"(72.3404541,140)"},"ID":60,"Name":"Guide
+        Step Complete","Instant":true}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(362.340454,160)"},"ID":61,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.SwitchCutStep","NodeData":{"Offset":"(-167.659546,160)"},"ID":62,"Name":"Switch
+        Cut Step","Instant":true,"Int32stepId":1018004},{"Type":"Game.CurSceneHasSpecifyGather","NodeData":{"Offset":"(2.340454,160)"},"ID":63,"Name":"Cur
+        Scene Has Specify Gather","Instant":true},{"Type":"Game.WindowIsClose","NodeData":{"Offset":"(172.340454,160)"},"ID":64,"Name":"Window
+        Is Close","Instant":true,"StringwindowName":"Loading"},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(302.340454,160)"},"ID":65,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepStart","NodeData":{"Offset":"(-217.659546,140)"},"ID":66,"Name":"Guide
+        Step Start","Instant":true,"Int32guideId":1018004},{"Type":"Game.MoveCameraOnObj","NodeData":{"Offset":"(-77.6595459,140)"},"ID":67,"Name":"Move
+        Camera On Obj","Instant":true},{"Type":"Game.EffectObjCreate","NodeData":{"Offset":"(72.3404541,140)"},"ID":68,"Name":"Effect
+        Obj Create","Instant":true},{"Type":"Game.OpenGuidanceWindow","NodeData":{"Offset":"(242.340454,140)"},"ID":69,"Name":"Open
+        Guidance Window","Instant":true}]}]}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(218.05542,117.59964)","Comment":"\u6b65\u9aa41018005","Collapsed":true},"ID":70,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-108.677063,156.295349)"},"ID":71,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018004},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(94.69247,156.295349)"},"ID":72,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-195.742249,174.131592)"},"ID":73,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018005},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(4.067383,174.131592)"},"ID":74,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsPlaying","NodeData":{"Offset":"(-111.508118,182.798)"},"ID":75,"Name":"Guide
+        Step Is Playing","Instant":true,"Int32stepID":1018005},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(90.23114,182.798)"},"ID":76,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Inverter","NodeData":{"Offset":"(-133.758545,122.203812)"},"ID":77,"Name":"Inverter","Instant":true,"Children":[{"Type":"Game.EndOfPlotDialog","NodeData":{"Offset":"(2.16955566,103.379143)"},"ID":78,"Name":"End
+        Of Plot Dialog","Instant":true}]},{"Type":"Game.GuideStepComplete","NodeData":{"Offset":"(143.632568,122.203812)"},"ID":79,"Name":"Guide
+        Step Complete","Instant":true}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(529.9489,147.8378)"},"ID":80,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepStart","NodeData":{"Offset":"(-117.500061,165.416672)"},"ID":81,"Name":"Guide
+        Step Start","Instant":true,"Int32guideId":1018005},{"Type":"Game.PlayPoltDialog","NodeData":{"Offset":"(110.294952,172.337662)"},"ID":82,"Name":"Play
+        Polt Dialog","Instant":true}]}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(455.7975,115.000031)","Comment":"\u6b65\u9aa41018006","Collapsed":true},"ID":83,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-110,160)"},"ID":84,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018005},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(90,160)"},"ID":85,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-200,170.000061)"},"ID":86,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018006},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(0,170.000061)"},"ID":87,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsPlaying","NodeData":{"Offset":"(-110,180.000061)"},"ID":88,"Name":"Guide
+        Step Is Playing","Instant":true,"Int32stepID":1018006},{"Type":"BehaviorDesigner.Runtime.Tasks.Selector","NodeData":{"Offset":"(90,180.000061)"},"ID":89,"Name":"Selector","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"BehaviorDesigner.Runtime.Tasks.Inverter","NodeData":{"Offset":"(-130,120)"},"ID":90,"Name":"Inverter","Instant":true,"Children":[{"Type":"Game.InSpecifyTypeScene","NodeData":{"Offset":"(0.775634766,136.500244)"},"ID":91,"Name":"In
+        Specify Type Scene","Instant":true,"SceneTypesceneType":"MainCity"}]},{"Type":"Game.GuideStepComplete","NodeData":{"Offset":"(35.83335,130.416672)"},"ID":92,"Name":"Guide
+        Step Complete","Instant":true}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(310,171.428589)"},"ID":93,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepStart","NodeData":{"Offset":"(-47.89968,165.297684)"},"ID":94,"Name":"Guide
+        Step Start","Instant":true,"Int32guideId":1018006},{"Type":"Game.OpenGuidanceWindow","NodeData":{"Offset":"(142.08342,165.297684)"},"ID":95,"Name":"Open
+        Guidance Window","Instant":true}]}]}]},{"Type":"BehaviorDesigner.Runtime.Tasks.Sequence","NodeData":{"Offset":"(687.746948,118.924835)","Comment":"\u5b8c\u6210\u672c\u5f15\u5bfc"},"ID":96,"Name":"Sequence","Instant":true,"AbortTypeabortType":"None","Children":[{"Type":"Game.GuideStepIsComplete","NodeData":{"Offset":"(-110,160)"},"ID":97,"Name":"Guide
+        Step Is Complete","Instant":true,"Int32stepID":1018006},{"Type":"Game.GuideCompleteAndSwitch","NodeData":{"Offset":"(89.98425,155.793274)"},"ID":98,"Name":"Guide
+        Complete And Switch","Instant":true}]}]}}'
+      fieldSerializationData:
+        typeName: []
+        fieldNameHash: 
+        startIndex: 
+        dataPosition: 
+        unityObjects: []
+        byteData: 
+        byteDataArray: 
+      Version: 1.6.7

@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Beam
+  m_Shader: {fileID: -6465566751694194690, guid: ed05d9e7768b83c458262759d82017ea, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_45db28691e45407dbb26630548bf0cf8:
+        m_Texture: {fileID: 2800000, guid: f45e4e3acd4972943ab2018b47967ee3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_6d69df03a3854c4eaccffc651847c5be:
+        m_Texture: {fileID: 2800000, guid: 14c02631e43984244b3afa13b472f743, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_2a91523b87744de98cec9c6eb2b4adb8: 0.184
+    - Vector1_36d74eae90d44ce3ab9def8e806b97dc: 0.1
+    - Vector1_a04e3cef2dd24a6f8272f5906a5be719: 3.73
+    - Vector1_a9a32c7c67ad4f369ea97449d7c2013d: 3
+    - Vector1_e2899b7eacad4c1caee50e602d795b1c: 0
+    - Vector1_e36f5e91b34641bbb610a79c35a3e1ef: 0.05
+    - _Bright: 3
+    m_Colors:
+    - Color_f6ecc086ed804e209ab31ffc0e461d06: {r: 13.76636, g: 5.045263, b: 1.4415036, a: 0}
+    - Vector2_83e88a45f4504c06adfc549f92a93f81: {r: -0.2, g: 0, b: 1, a: 0}
+    - Vector2_d808970a9ebb41dc8b1642023b937da3: {r: 0.54, g: 0, b: 0, a: 0}
+    - Vector4_104f0e80c70b41e6be78942ac639922a: {r: 1, g: 1, b: 0, a: 0}
+  m_BuildTextureStacks: []

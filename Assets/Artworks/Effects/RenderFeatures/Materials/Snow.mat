@@ -1,0 +1,72 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Snow
+  m_Shader: {fileID: 4800000, guid: 59c6f7c02c9898240bf4f5183c2c2a3a, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTexture:
+        m_Texture: {fileID: 2800000, guid: fe6939a92c767084ba3507901301edbc, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalTexture:
+        m_Texture: {fileID: 2800000, guid: 432b266eec241ed45a533314673cb2bd, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Amount: 0.062
+    - _EdgeSoft: 0.114
+    - _EdgeSoft2: 0.33
+    - _Flickr: 1
+    - _FogDensity: 0.2
+    - _FogHeight: 0
+    - _Ground: 1.22
+    - _GroundAmount: 0.182
+    - _GroundAmount2: 0.236
+    - _GroundEdgeSoft: 0.268
+    - _GroundIntensity: 0.713
+    - _GroundSoft: 0.317
+    - _HalfGround: 6.7
+    - _Intensity: 0.723
+    - _MaxDistance: 200
+    - _NoiseScale: 1.09
+    - _NormalScale: 0.52
+    - _NormalTiling: 1.4
+    - _ShadowAdjust: 0
+    - _SigntDistance: 1
+    - _SnowAmount: 0.057
+    - _SnowDensity: 0.22
+    - _SnowHeight: 1.24
+    - _SnowHeightGround: -2
+    - _SnowIntensity: 0
+    - _SnowIntensityGround: 2.58
+    - _Specular: 1
+    - _Top: 6.75
+    - _TopAmount: 0.151
+    - _TopEdgeSoft: 0
+    - _TopIntensity: 1
+    m_Colors:
+    - _FogColor: {r: 1, g: 1, b: 1, a: 1}
+    - _GroundSmooth: {r: 1, g: 1, b: 1, a: 1}
+    - _NoiseST: {r: 0, g: 30, b: 0, a: 120.56}
+    - _NoiseSpeed: {r: 0, g: 0, b: 0, a: 100}
+    - _SnowColor: {r: 0.6198825, g: 0.64649343, b: 0.6603774, a: 0}
+  m_BuildTextureStacks: []

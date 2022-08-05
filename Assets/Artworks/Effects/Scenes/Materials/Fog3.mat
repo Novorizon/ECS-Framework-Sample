@@ -1,0 +1,51 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Fog3
+  m_Shader: {fileID: 4800000, guid: 04a856445653bbd4588267a0c1d596a4, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 3003
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _CloudTex2:
+        m_Texture: {fileID: 2800000, guid: 3f1d4fadb37c37e4488860109d7dce4b, type: 3}
+        m_Scale: {x: 2, y: 2}
+        m_Offset: {x: 1, y: 1}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: a8baae6b79794a4448fcf5cddc9df7e8, type: 3}
+        m_Scale: {x: 0.85, y: 0.85}
+        m_Offset: {x: 1.18, y: 1.06}
+    - _MaskTex:
+        m_Texture: {fileID: 2800000, guid: 6bcb4dc9517f92441a1ac265849fbc91, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _AlphaB: 0.22
+    - _AlphaOffset: 0.54
+    - _AlphaScale: 1
+    - _BrightOffset: 0
+    - _EdgeClipA: 1
+    - _EdgeClipB: 1
+    - _EdgeClipC: 1
+    - _MaskEdge: 0
+    - _MaskEdgeA: -0.05
+    - _MaskEdgeB: 0.28
+    m_Colors:
+    - _AlphaOffset: {r: -0.05, g: 0.28, b: 1, a: 1.41}
+    - _Center: {r: 0, g: 0, b: 0, a: 0}
+    - _Color: {r: 0.46226406, g: 0.46226406, b: 0.46226406, a: 1}
+    - _ColorOffset: {r: 0.46, g: 0.49, b: 1, a: 1}
+    - _MainColor: {r: 0.44339615, g: 0.44339615, b: 0.44339615, a: 0.21960784}
+  m_BuildTextureStacks: []

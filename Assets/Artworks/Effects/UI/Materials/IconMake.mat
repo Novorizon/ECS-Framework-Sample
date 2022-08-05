@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: IconMake
+  m_Shader: {fileID: 4800000, guid: def543a8689baf44ca9126dd71b9aff4, type: 3}
+  m_ShaderKeywords: MASK_COLOR
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: 3000
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_6fd422a7259c4eff85616ab75b712e48:
+        m_Texture: {fileID: 2800000, guid: 176e2bcbca3b13049b360279504fbbc6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _BarTex:
+        m_Texture: {fileID: 2800000, guid: 176e2bcbca3b13049b360279504fbbc6, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _LightTex:
+        m_Texture: {fileID: 2800000, guid: 71fee254a7223db40b86aab82afe1487, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_Lightmaps:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_LightmapsInd:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - unity_ShadowMasks:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - Vector1_1bf3dc2d666143cbbb4d68de83c1af0c: 0.05
+    - Vector1_33d12b287a9e44b99b27f6c52cc56588: 0.192
+    - Vector1_4c4fd52333404eedb4aae858355ecf44: 25
+    - Vector1_70c64192549a46ae85737c218a3fbc56: 0.77
+    - Vector1_9dd8a01bc60744d3b756d728b41d6905: 47.2
+    - Vector1_a25ac9da92644f4d9ea424d7fdc772f6: 500
+    - Vector1_ac44793174c2436481541ffda6eda28b: 0.41
+    - Vector1_ad928c65ac2442689e423f62cc7e2ade: 0.86
+    - Vector1_b4e6c3b930f442cba1553dc95f3e0ab9: 0.953
+    - _ColorMask: 15
+    - _MASK_COLOR: 0
+    - _Progress: 0
+    - _ScanScale: 0.81
+    - _ScanSpeed: 5.08
+    - _Stencil: 0
+    - _StencilComp: 8
+    - _StencilOp: 0
+    - _StencilReadMask: 255
+    - _StencilWriteMask: 255
+    - _UseUIAlphaClip: 0
+    m_Colors:
+    - Color_caa8c63cc25b408db04ba273a6069633: {r: 0.7924528, g: 0.7924528, b: 0.7924528, a: 0}
+    - Vector4_b9951887f9a14502984853340b38915a: {r: 5, g: 10, b: -0.4, a: -0.95}
+    - _BarPosition: {r: 5, g: 10, b: -0.4, a: -0.95}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _LightPosition: {r: 1.2, g: 10, b: -0.1, a: -0.95}
+    - _MaskColor: {r: 0.5188679, g: 0.5188679, b: 0.5188679, a: 1}
+  m_BuildTextureStacks: []
