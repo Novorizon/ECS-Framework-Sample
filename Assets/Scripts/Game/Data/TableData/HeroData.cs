@@ -7,7 +7,7 @@ namespace DataBase
     public class HeroData : TableData
     {
         public int id;
-        public string name;
+        public int name;
         public int description { get; set; }
         public int level;
         public int type;

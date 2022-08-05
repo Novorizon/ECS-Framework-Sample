@@ -13,23 +13,64 @@ namespace Game
 
         public new static string NAME = typeof(TableProxy).FullName;
 
-        private Dictionary<Type, TableAccess> accessors = new Dictionary<Type, TableAccess>();
+        private Dictionary<Type, TableAccess> accessors;
         private Dictionary<Type, Type> accessorTypes;
 
+        string name;
         string path;
-
+        bool loaded;
+        bool initialized;
         public TableProxy() : base(NAME) { }
 
         public override void OnRegister()
         {
-            path = "";
+            Init();
         }
 
         public override void OnRemove()
         {
         }
 
-        private void RegisterTable<T>(AccessType type = AccessType.Immediately) where T : TableAccess, new()
+
+        public  void Init()
+        {
+            name = "Test.db";
+            path = "";
+
+            accessors = new Dictionary<Type, TableAccess>();
+            accessorTypes = new Dictionary<Type, Type>();
+
+#if UNITY_EDITOR
+            loaded = true;
+#else
+            loaded = false;
+#endif
+            initialized = false;
+
+
+#if UNITY_EDITOR
+            path = Application.streamingAssetsPath + "/" + name;
+#elif UNITY_STANDALONE_WIN
+            path = Application.streamingAssetsPath + "/" + name;  
+#elif UNITY_ANDROID
+            path = Application.persistentDataPath + "/" + name;  
+#elif UNITY_IPHONE
+            path = Application.persistentDataPath + "/" + name;  
+
+            //判断路径内数据库是否存在  
+            if(!File.Exists(path))  
+            {  
+                //拷贝数据库  
+                //StartCoroutine(CopyDataBase());
+                return;
+            }  
+#endif
+
+            path = "URI=file:" + path;
+
+        }
+
+        public void RegisterTable<T>(AccessType type = AccessType.Immediately) where T : TableAccess, new()
         {
             if (accessors == null || accessorTypes == null || accessors.ContainsKey(typeof(T)))
                 return;
@@ -66,6 +107,7 @@ namespace Game
             }
             db.Close();
 
+            SendNotification(GameConsts.LOAD_DB_FINISH);
             return true;
         }
 

@@ -9,7 +9,7 @@ namespace DataBase
     public class HeroTableAccess : TableAccess
     {
         Dictionary<int, TableData> datas;
-        public override Type DataType => typeof(HeroData);
+        public override Type DataType => typeof(NPCData);
 
         public Dictionary<int, TableData> GetDatas() => datas;
   
@@ -38,7 +38,7 @@ namespace DataBase
                 data = new HeroData();
 
                 data.id = GetInt32(reader, "id");
-                data.name = GetString(reader, "name");
+                data.name = GetInt32(reader, "name");
                 data.description = GetInt32(reader, "description");
                 data.type = GetInt32(reader, "type");
 
