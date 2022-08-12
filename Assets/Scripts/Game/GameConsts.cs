@@ -4,6 +4,16 @@ namespace Game
 {
     public static class GameConsts
     {
+        //-------------------------------HUD-------------------------------------------
+        public const string HUD_QUEST_START = "HUD_QUEST_START";
+        public const string HUD_QUEST_FINISH= "HUD_QUEST_FINISH";
+        public const string HUD_QUEST_ABORT = "HUD_QUEST_ABORT";
+        public const string HUD_QUEST_REWARD= "HUD_QUEST_REWARD";
+
+        //-------------------------------Quest-------------------------------------------
+        public const string QUEST_SELECT = "QUEST_SELECT";
+        public const string QUEST_START = "QUEST_START";
+
         //-------------------------------¥Êµµœ‡πÿ-------------------------------------------
         public const string RES_DESCRYPT_KEY = "x@7lzY3SW9xvYgmc";
         public const string MSG_DESCRYPT_KEY = "0123456789012345";

@@ -17,7 +17,7 @@ using System.Diagnostics;
 using Mono.Data.Sqlite;
 using Database;
 
-namespace Editor
+namespace NPCEditor
 {
 
     public partial class NPCEditor
@@ -28,7 +28,6 @@ namespace Editor
 
         TableProxy tableProxy;
         NpcProxy npcProxy;
-        ModelProxy modelProxy;
 
         ModelTableAccess access;
 
@@ -126,37 +125,38 @@ namespace Editor
                     return;
                 }
 
-                db = new SQLiteHelper(path);
+                NPCTableAccess access = tableProxy.GetAccess<NPCTableAccess>();
+                Dictionary<int, NPCData> npcs = access.GetDatas();
+                ModelTableAccess modelAccess = tableProxy.GetAccess<ModelTableAccess>();
+                Dictionary<int, ModelData> models = modelAccess.GetDatas();
 
-                SqliteDataReader reader = db.ReadFullTable("NPC");
-                if (reader == null)
+                foreach (var item in npcs)
                 {
 
-                    return;
-                }
-
-                List<NPCProperty> list = new List<NPCProperty>();
-                while (reader.Read())
-                {
                     NPCData npc = new NPCData();
                     NPCProperty data = new NPCProperty();
 
-                    npc.id= data.id = GetInt32(reader, "id");
-                    data.name = GetString(reader, "name");
-                    data.description = GetString(reader, "description");
-                    data.type = (NPCType)GetInt32(reader, "type");
-                    int modelId = GetInt32(reader, "modelId");
+                    npc.id = data.id = item.Value.id;
+                    data.name = item.Value.name;
+                    data.description = item.Value.description;
+                    data.type = item.Value.type;
+                    int modelId = item.Value.modelId;
+                    data.avatar = AssetDatabase.LoadAssetAtPath<Sprite>(item.Value.avatar);
 
-                    ModelData model = (ModelData)access.GetData(modelId);
-                    GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(model.path);
-                    data.model = go;
+                    ModelData model = (ModelData)modelAccess.GetData(modelId);
+
+                    if (model != null)
+                    {
+                        GameObject go = AssetDatabase.LoadAssetAtPath<GameObject>(model.path);
+                        data.model = go;
+                    }
+                    else
+                    {
+                        data.model = AssetDatabase.LoadAssetAtPath<GameObject>(item.Value.model);
+                    }
                     datas.Add(data);
-
-                    //modelProxy.GetDatas().Values
-                    //npcs.Add()
                 }
 
-                reader.Close();
                 updated = true;
             }
             mode = EditorMode.Settings;

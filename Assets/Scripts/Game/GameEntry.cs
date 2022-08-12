@@ -60,9 +60,12 @@ namespace Game
                 UIManager.Instance.CloseWindowFromStack();
             };
 
+            SendNotification(RegistMediatorCommand.Name, this, QuestMediator.NAME);
 
             SendNotification(LoadHeroCommand.NAME);
+            SendNotification(LoadNPCCommand.NAME);
 
+            UIManager.Instance.OpenWindow(UIConfig.HUD);
         }
 
         protected override void OnStop()
@@ -81,11 +84,13 @@ namespace Game
         {
             Facade.RegisterCommand(LoadSceneCommand.NAME, () => new LoadSceneCommand());
             Facade.RegisterCommand(LoadHeroCommand.NAME, () => new LoadHeroCommand());
+            Facade.RegisterCommand(LoadNPCCommand.NAME, () => new LoadNPCCommand());
         }
 
         protected override void InitializeProxy()
         {
             Facade.RegisterProxy(new HeroProxy());
+            Facade.RegisterProxy(new QuestProxy());
         }
 
         protected override void InitializeSystem()
@@ -95,6 +100,7 @@ namespace Game
             //SendNotification(ILRuntimeMediator.CMD_IL_GAME_START);
             World.Self.RegisterSystem<ControllerMoveSystem>();
             World.Self.RegisterSystem<ControllerLookAtSystem>();
+            World.Self.RegisterSystem<ControllerSelectSystem>();
             World.Self.RegisterSystem<FollowCameraRollSystem>();
             World.Self.RegisterSystem<FaceForwardSystem>();
             World.Self.RegisterSystem<PlayerMoveSystem>();

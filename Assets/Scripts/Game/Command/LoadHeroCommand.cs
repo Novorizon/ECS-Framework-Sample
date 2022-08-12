@@ -25,6 +25,9 @@ namespace Game
             HeroProxy proxy = Facade.RetrieveProxy(HeroProxy.NAME) as HeroProxy;
             if (proxy == null)
                 return;
+            QuestProxy questProxy = Facade.RetrieveProxy(QuestProxy.NAME) as QuestProxy;
+            if (questProxy == null)
+                return;
 
             int isCreated = PlayerPrefs.GetInt("CharacterCreated", 0);
             if (isCreated == 0)
@@ -33,6 +36,7 @@ namespace Game
                 if (defaultData == null)
                     return;
                 proxy.SetData(defaultData);
+                //questProxy.SetData(defaultData);
             }
 
             HeroVO data = proxy.GetData();
@@ -56,7 +60,7 @@ namespace Game
                 EntityManager.Instance.AddComponentData<Scale>(hero).Value = Vector3.one;
                 EntityManager.Instance.AddComponentData<CopyToTransformComponent>(hero);
 
-                EntityManager.Instance.AddComponentData<Speed>(hero).Value = data.speed;
+                EntityManager.Instance.AddComponentData<Speed>(hero).Value = data.speed*10;
                 EntityManager.Instance.AddComponentData<MoveDirection>(hero).Value =Vector3.zero;
                 EntityManager.Instance.AddComponentData<FaceDirection>(hero).Value = Vector3.forward;// data.forward;
 

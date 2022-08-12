@@ -8,17 +8,17 @@ namespace DataBase
     [TableAccess]
     public class ModelTableAccess : TableAccess
     {
-        Dictionary<int, TableData> datas;
+        Dictionary<int, ModelData> datas;
         public override Type DataType => typeof(ModelData);
 
-        public Dictionary<int, TableData> GetDatas() => datas;
+        public Dictionary<int, ModelData> GetDatas() => datas;
   
 
         public ModelTableAccess()
         {
             Name = "Model";
             Loaded = false;
-            datas = new Dictionary<int, TableData>();
+            datas = new Dictionary<int, ModelData>();
         }
 
 

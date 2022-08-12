@@ -17,7 +17,7 @@ using System.Diagnostics;
 using Mono.Data.Sqlite;
 using Database;
 
-namespace Editor
+namespace NPCEditor
 {
     [AttributeUsage(AttributeTargets.All, AllowMultiple = false, Inherited = true)]
     [Conditional("UNITY_EDITOR")]
@@ -91,7 +91,7 @@ namespace Editor
 
         }
 
-        private new void OnEnable()
+        protected override void OnEnable()
         {
             if (Instance != null)
             {
@@ -105,13 +105,12 @@ namespace Editor
 
             Facade.RegisterProxy(new TableProxy());
             Facade.RegisterProxy(new NpcProxy());
-            Facade.RegisterProxy(new ModelProxy());
             tableProxy = Facade.RetrieveProxy(TableProxy.NAME) as TableProxy;
-            npcProxy = Facade.RetrieveProxy(NpcProxy.NAME) as NpcProxy;
-            modelProxy = Facade.RetrieveProxy(ModelProxy.NAME) as ModelProxy;
 
             tableProxy.RegisterTable<ModelTableAccess>();
+            tableProxy.RegisterTable<NPCTableAccess>();
             access = tableProxy.GetAccess<ModelTableAccess>();
+
 
             db.Open(path);
             tableProxy.Load();
@@ -136,6 +135,8 @@ namespace Editor
 
             id = 0;
             name = "";
+            GameObject.DestroyImmediate(display);
+            display=null;
 
             hasUnsavedChanges = false;
             autoRepaintOnSceneChange = false;

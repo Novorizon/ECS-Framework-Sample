@@ -38,8 +38,10 @@ namespace DataBase
                 data = new HeroData();
 
                 data.id = GetInt32(reader, "id");
-                data.name = GetInt32(reader, "name");
-                data.description = GetInt32(reader, "description");
+                int name = GetInt32(reader, "name");
+                data.name = "test";
+                int description = GetInt32(reader, "description");
+                data.description = "test";
                 data.type = GetInt32(reader, "type");
 
                 datas.Add(data.id, data);

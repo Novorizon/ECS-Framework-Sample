@@ -15,7 +15,9 @@ namespace DataBase
     {
         public int id;
         public string name;
-        public int modelId;                                       // 
+        public int modelId;
+        public string model;                                // 
+        public string avatar;
         public string description { get; set; }
         public int level;
         public NPCType type;

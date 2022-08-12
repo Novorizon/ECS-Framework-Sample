@@ -30,6 +30,9 @@ namespace DataBase
         public Vector3 position;                                       // µÈ¼¶
         public Vector3 forward;                                // 
 
+        public List<int> quests;                                       // 
+        public List<int> states;                                       // 
+        public List<int> stages;                                       // 
         private bool Updated;
 
         public DefaultData()

@@ -8,17 +8,17 @@ namespace DataBase
     [TableAccess]
     public class NPCTableAccess : TableAccess
     {
-        Dictionary<int, TableData> datas;
+        Dictionary<int, NPCData> datas;
         public override Type DataType => typeof(NPCData);
 
-        public Dictionary<int, TableData> GetDatas() => datas;
-  
+        public Dictionary<int, NPCData> GetDatas() => datas;
+
 
         public NPCTableAccess()
         {
-            Name = "Hero";
+            Name = "NPC";
             Loaded = false;
-            datas = new Dictionary<int, TableData>();
+            datas = new Dictionary<int, NPCData>();
         }
 
 
@@ -31,17 +31,20 @@ namespace DataBase
             if (reader == null)
                 return false;
 
-            HeroData data = null;
+            NPCData data = null;
 
             while (reader.Read())
             {
-                data = new HeroData();
+                data = new NPCData();
 
                 data.id = GetInt32(reader, "id");
-                data.name = GetInt32(reader, "name");
-                data.description = GetInt32(reader, "description");
-                data.type = GetInt32(reader, "type");
+                data.name = GetString(reader, "name");
+                data.description = GetString(reader, "description");
+                data.type = (NPCType)GetInt32(reader, "type");
 
+                data.modelId = GetInt32(reader, "modelId");
+                data.model = GetString(reader, "model");
+                data.avatar = GetString(reader, "avatar");
                 datas.Add(data.id, data);
             }
 
