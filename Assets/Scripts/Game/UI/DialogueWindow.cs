@@ -1,9 +1,6 @@
 ﻿using MVC.Extensions;
 using MVC.UI;
-using System;
-using System.Collections.Generic;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -31,7 +28,8 @@ namespace Game
             imageSpeaker.LoadSprite("ui_beast_levelup_shangchengjiantou");
 
 
-            buttonConfirm.onClick.AddListener(OnConfirm);
+            //buttonConfirm = transform.Find("Panel/Bottom/DialogueBox/Character/Name").GetComponent<TextMeshProUGUI>();
+            //buttonConfirm.onClick.AddListener(OnConfirm);
 
             EnableUpdate(true);
         }

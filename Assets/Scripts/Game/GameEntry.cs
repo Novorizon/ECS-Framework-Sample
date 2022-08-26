@@ -2,6 +2,7 @@
 using ECS;
 using Game.Input;
 using MVC;
+using MVC.Patterns;
 using MVC.Providers;
 using MVC.UI;
 using System.Collections;
@@ -97,6 +98,7 @@ namespace Game
         {
             WorldManager.Instance.Initialize();
 
+            World.Self.Initialize();
             //SendNotification(ILRuntimeMediator.CMD_IL_GAME_START);
             World.Self.RegisterSystem<ControllerMoveSystem>();
             World.Self.RegisterSystem<ControllerLookAtSystem>();
