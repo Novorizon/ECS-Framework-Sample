@@ -1,3 +1,4 @@
+using Cspb;
 using Database;
 using DataBase;
 using PureMVC.Patterns.Proxy;
@@ -14,11 +15,16 @@ namespace Game
         public new static string NAME = typeof(HeroProxy).FullName;
 
         private HeroVO data;
+        NetProxy netProxy = null;
 
         public HeroProxy() : base(NAME) { }
 
         public override void OnRegister()
         {
+            netProxy = Facade.RetrieveProxy(NetProxy.NAME) as NetProxy;
+
+            netProxy.RegisterHandler(typeof(AuthAck), HandlerFunc);
+
             data = new HeroVO();
             GetPrefs();
         }
@@ -27,6 +33,11 @@ namespace Game
         {
         }
 
+
+        protected void HandlerFunc(object data)
+        {
+            AuthAck ack = data as AuthAck;
+        }
 
         public void GetPrefs()
         {

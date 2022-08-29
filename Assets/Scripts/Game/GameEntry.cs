@@ -90,6 +90,7 @@ namespace Game
 
         protected override void InitializeProxy()
         {
+            Facade.RegisterProxy(new NetProxy());
             Facade.RegisterProxy(new HeroProxy());
             Facade.RegisterProxy(new QuestProxy());
         }
