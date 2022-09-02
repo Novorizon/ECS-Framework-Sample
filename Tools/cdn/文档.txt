@@ -1,0 +1,8 @@
+proto3文件夹是需要上传cdn的文件夹
+
+
+旧版示例：
+java -jar gy_cdn_uploader-0.0.1-SNAPSHOT.jar --team_name ngcsw --remote_path_name cn_android --local_path_name D:\Workspace\UnityProjects\HerosBattle\Tools\cdn\upload
+Zoids项目示例：
+java -jar gy_cdn_uploader-0.0.1-SNAPSHOT.jar --team_name zoids --remote_path_name ppe --local_path_name D:\Workspace\UnityProjects\HerosBattle\ServerData\Android\1
+http://cdn-ydxy-patch.wyx.cn/projectproxy/zoids/cdn/ppe/pList.json?v=7c2588e321be8a2f79f33f93b0e766f6

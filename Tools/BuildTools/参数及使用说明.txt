@@ -1,0 +1,15 @@
+使用说明 ： 
+    使用前必须保证 Setting 文件中的"unity_path" 和 "project_path" 参数内容正确
+    然后点击RunTools.bat文件进行打包
+
+    如果是只打资源包或者是全都打，项目输出的资源 json 内容可在 Log文件夹下找对对应的Log文件 在其中 全局搜索 “Table” 关键字即可
+
+
+参数说明 ： 
+"unity_path"  ： Unity 路径当前版本为 2020.3.24f1 绝对路径
+"project_path" : 代打包项目绝对路径
+"output_path" : 打包APK 输出路径
+"project_ver" ： 版本号
+"asset_build_env" :         资源打包策略 暂时只实现了PPE
+"build_type" ,              打包类型  false 表示Devlopment , true ： release
+"build_asset_or_apk":  3    打包选项  1.只打AssetBundle 2.只打Apk  3.打完assetbudle 打 apk

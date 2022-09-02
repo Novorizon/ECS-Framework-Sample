@@ -1,4 +1,3 @@
-using MVC;
 using UnityEngine.InputSystem.EnhancedTouch;
 
 namespace Game.Input

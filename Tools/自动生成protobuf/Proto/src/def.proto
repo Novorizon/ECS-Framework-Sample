@@ -1,0 +1,634 @@
+syntax = "proto3";
+package cspb;
+
+
+// 通用消息错误码
+enum ERR_CODE {
+    ERR_CODE_NO_ERROR                = 0;
+
+    // 通用错误     1-100
+    ERR_CODE_INTERNAL_ERR               = 1;
+    ERR_CODE_PF_ERR                     = 2;
+    ERR_CODE_ERR_SERVER_DATE            = 3;
+    ERR_CODE_PF_INVALID_ACCESS_TOKEN    = 4;
+    ERR_CODE_PERMISSION_VERIFY_FAILED   = 5;
+    ERR_CODE_ERR_ILLEGAL_REQ            = 6;
+    ERR_CODE_OP_ET_NOT_BELONG_TO_YOUR   = 7; // 玩家操作的实体不属于玩家(玩家请求别的玩家的数据进行操作)
+    ERR_CODE_PF_CHARACTER_CREATE_FAILED = 8;
+    ERR_CODE_PF_LOGIN_FAILED            = 9;
+    ERR_CODE_PF_ACC_LINK_HASCHAR        = 10; // 要绑定的账号有角色
+    ERR_CODE_PF_ACC_LINK_FAUKED         = 11; // 要绑定的账号失败
+    ERR_CODE_PF_ACC_INVALIDACCOUNTTYPE  = 12; // 错误的账号类型
+
+
+    // 帐号&登录相关 100 - 1000
+    ERR_CODE_PLAYER_NOT_FOUND            = 101;
+    ERR_CODE_PLAYER_NAME_ALREADY_EXIST   = 102;  // 玩家名已存在
+    ERR_CODE_PLAYER_NAME_LEN_LIMIT       = 103;  // 玩家名长度限制
+    ERR_CODE_PLAYER_NAME_BAD_WORD        = 104;  // 玩家名包含敏感词
+    ERR_CODE_AUTH_FAILED                 = 105;  // 玩家Auth失败
+    ERR_CODE_ACCOUNT_CREATE_FAILED       = 106;  // 网关账号创建失败
+    ERR_CODE_PLAYER_NOT_FOUND_2          = 107;  // 网关上玩家不存在
+    ERR_CODE_ACCOUNT_NOT_FOUND           = 108;  // 网关上账号不存在
+    ERR_CODE_GATE_ADD_ROLE_FAILED        = 109;  // 网关上增加玩家失败
+    ERR_CODE_INVALID_DEVICE              = 110;  // 设备UDID错误
+    ERR_CODE_CANOT_BIND                  = 111;  // 只能绑定匿名账号
+    ERR_CODE_DUPLICATE_CREATE_PLAYER     = 112;  // 该服务器已存在角色
+    ERR_CODE_LOGIN_WAIT_LOGOUT_TIMEOUT   = 113;  // 多点登录，等待已有角色登出超时
+    ERR_CODE_LOGIN_WITH_ERR_STATE        = 114;  // 多点登录， 已有登录状态错误
+    ERR_CODE_NILCLIENTINFO               = 115; // clientinfo 为空
+    ERR_CODE_SERVER_NOT_FOUND            = 116;  // 目标服务器没找到
+    ERR_CODE_CONNECT_SERVER_FAILED       = 117;  // 连接目标服务器失败
+    ERR_CODE_DUPLICATE_LOGIN             = 118;  // 多次登陆
+    ERR_CODE_FASTLOGINSECRETERR          = 119;  // FastLoginSecret错误
+    ERR_CODE_FORBIDEDMSG                 = 120;  // 被禁止消息
+    ERR_CODE_PLAYERNAME_NOCHANG          = 121;  // 名字无改变
+    ERR_CODE_PLAYER_NAME_LEN_SHORT       = 122;  // 名字无改变
+
+
+
+    // play相关 1000 - 2000 city/hero/skill/breport/land
+    ERR_CODE_ERR_CITY_ID                     = 1001; // 没有找到城
+    ERR_CODE_ERR_HERO_RID                    = 1002; // 没有找到英雄
+    ERR_CODE_HERO_IS_IN_OTHER_TROOP          = 1003; // 英雄在其他队伍中
+    ERR_CODE_PLAYER_RES_LACK                 = 1004; // 玩家资源不够
+    ERR_CODE_ERR_BUILD_ID                    = 1005; // 没有找到建筑
+    ERR_CODE_BUILD_ALREADY_MAX_LEVEL         = 1006; // 城建已经达到满级
+    ERR_CODE_ERR_BUILD_RELY_ON               = 1007; // 需要升级其他依赖建筑
+    ERR_CODE_BUILD_ALREADY_UPGRADE           = 1008; // 建筑已经升级
+    ERR_CODE_BREPORT_ALREADY_COLLECT         = 1009; // 战报已拉取
+    ERR_CODE_FULL_COLLECT_BREPORT            = 1010; // 拉取战报数量已达最大
+    ERR_CODE_SKILL_ALREADY_RESEARCH          = 1012; // 技能已经被研究
+    ERR_CODE_SKILL_IS_INTEGRITY              = 1013; // 技能研究完成
+    ERR_CODE_HERO_CANNOT_LEARN_SKILL         = 1014; // 第一个技能英雄等级不够，第一个技能英雄没有觉醒
+    ERR_CODE_HERO_CANNOT_FORGET_SKILL        = 1015; // 英雄没有学习技能, 因此不能遗忘
+    ERR_CODE_ERR_BREPORT_ID                  = 1016; // 没有找到战报
+    ERR_CODE_ERR_HERO_REMAIN_ASGN_LACK       = 1017; // 英雄缺少足够的可分配属性点
+    ERR_CODE_HERO_ALREADY_MAX_ADVSTAR        = 1018; // 英雄红星已经满了，无法进阶
+    ERR_CODE_CONSUME_HERO_CANNOT_DEL         = 1019; // 指定的消耗英雄无法删除 (学习了技能,锁定, 在队伍中)
+    ERR_CODE_PROMOTE_CONSUME_HERO_NOT_SAME   = 1020; // 进阶消耗的英雄与进阶英雄hero_id的不同
+    ERR_CODE_HERO_HAS_AWAKE                  = 1022; // 英雄已经觉醒
+    ERR_CODE_PLAYER_ALREADY_FINISH_NEWBIE    = 1024; // 玩家已完成新手教学
+    ERR_CODE_AWAKE_CONSUME_STAR_NOT_SAME     = 1025; // 觉醒英雄和消耗英雄星级不一样
+    ERR_CODE_CONSUME_HERO_IN_TROOP           = 1026; // 被消耗的英雄在队伍中
+    ERR_CODE_HREO_AWAKE_CONSUME_CNT_ERR      = 1027; // 觉醒英雄消耗个数错误（小于2）
+    ERR_CODE_SKILL_INDEX_OUT_OF_RANGE        = 1029; // 英雄技能索引不在 0-2 之间
+    ERR_CODE_SKILL_CANNOT_BE_LEARNED         = 1030; // 技能不能被学习(研究进度小于100，已经超过最大学习次数)
+    ERR_CODE_INDEX_ALREADY_LEARN_SKILL       = 1031; // 英雄index位置已经学习了技能
+    ERR_CODE_REPEAT_ID                       = 1032; // 发送的id里面有重复
+    ERR_CODE_HERO_ALREADY_LEARN_THIS_SKILL   = 1033; // 英雄已经学习了该技能,不能再次该学习
+    ERR_CODE_ERR_SKILL_ID                    = 1034; // 没有找到此技能
+    ERR_CODE_HERO_KIND_NOT_MATCH_SKILL       = 1035; // 英雄兵种与技能可学习兵种不符
+    ERR_CODE_HERO_CONNOT_RESEARCH_THIS_SKILL = 1036; // 英雄不能研究这个技能 (英雄兵种, 星级不符)
+    ERR_CODE_ERR_SKILL_LEVEL                 = 1037; // 技能等级不一致(在学习技能时为了避免数据不一致,需要与客户端验证技能等级)
+    ERR_CODE_ERR_SKILL_EXP_LACK              = 1038; // 战法经验不足
+    ERR_CODE_HERO_ALREADY_LOCKED             = 1039; // 英雄已锁定
+    ERR_CODE_HERO_ALREADY_UNLOCKED           = 1040; // 英雄已解锁
+    ERR_CODE_ALLOT_ASGN_VALUE_ERR            = 1041; // 属性分配的值错误（小于0或者比原来的值小）
+    ERR_CODE_HERO_LEVEL_CANNOT_AWAKE         = 1042; // 英雄等级不能觉醒
+    ERR_CODE_FIRST_SKILL_LEVEL_CANNOT_AWAKE  = 1043; // 英雄自带技能等级不能觉醒
+    ERR_CODE_PLAYER_DIAMOND_LACK             = 1044; // 玩家钻石不足
+    ERR_CODE_RESET_ASGN_TYPE_NOT_MATCH       = 1045; // is_free 字段不一致
+    ERR_CODE_BUILD_IS_NOT_UPGRADE            = 1046; // 建筑没有在升级
+    ERR_CODE_COLLECT_TAXES_CNT_MAX           = 1047; // 收税次数已达上限
+    ERR_CODE_TRANS_RES_SRC_DEST_SAME         = 1048; // 资源交易目标与源资源一样
+    ERR_CODE_TRANS_RES_CNT_LESS_THAN_0       = 1049; // 资源交易小于0
+    ERR_CODE_PLAYER_HAVE_NOT_TRANS_BUILD     = 1050; // 玩家没有建筑交易所,不能交易
+    ERR_CODE_TRANS_RES_SRC_DEST_ERR          = 1051; // src/dest 不能交易
+    ERR_CODE_FULL_COLLECT_LANDS              = 1052; // 玩家收藏土地已满
+    ERR_CODE_ERR_PLAYER_COIN_LACK            = 1053; // 玩家金币不足
+    ERR_CODE_PLAYER_HERO_FULL                = 1054; // 玩家英雄上限
+    ERR_CODE_PLAYER_SKILL_FULL               = 1055; // 玩家技能上限
+    ERR_CODE_NOT_COMPLEATED_TASK             = 1056; // 任务不处于可领奖状态
+    ERR_CODE_ERR_TASKID                      = 1057; // 不合法的任务id
+    ERR_CODE_TASK_NOT_EXIST                  = 1058; // 任务不存在
+    ERR_CODE_ERR_NEXT_TASKID                 = 1059; // 后续任务ID不合法
+    ERR_CODE_UNKNOWN_TASK_PRIZE              = 1060; // 未知的任务奖励名称
+    ERR_CODE_NO_GOODS_NAME                   = 1061; // 没有找到商品 如商品id错误 商品已经出售
+    ERR_CODE_LACK_RESOURCE                   = 1062; // 购买商品时 缺少商品所需要的资源
+    ERR_CODE_INVALID_PURCHASE                = 1063; // 无效的购买请求
+    ERR_CODE_WRONG_MARKET_ID                 = 1064; // 市场ID错误
+    ERR_CODE_MARKET_LOCKED                   = 1065; // 市场未解锁
+    ERR_CODE_TAX_TIME_INTERVAL               = 1066; //未满足收税时间间隔
+    ERR_CODE_GOODS_SOLD_OUT                  = 1067; // 已经卖出
+    ERR_CODE_TRADE_ZERO_RATE                 = 1068; // 交易 资源兑换率为0 没有启用交易功能时
+    ERR_CODE_INVALID_RES                     = 1069; // 无效的资源 数量非正 id错误
+    ERR_CODE_SAME_RES                        = 1070; // 同种资源无法交易
+    ERR_CODE_MAX_MARKET_REFRESH_TIMES        = 1071; // 超过商店最大刷新次数
+    ERR_CODE_BUILD_TILE_LEVEL_LIMIT          = 1072; // 升级建筑物所需的地块等级不够
+    ERR_CODE_PROMOTE_CONSUME_HERO_CNT_ERR    = 1073; // 进阶消耗英雄为0
+    ERR_CODE_FORCE_COLLECT_TAXES_CNT_MAX     = 1074; // 人民币玩家收税次数已达上限
+    ERR_CODE_NOT_REQUIRE_FORCE_COLLECT       = 1075; // 人民币玩家不需要强征，已经到第二天了
+    ERR_CODE_ORDER_LACK                      = 1076; // 政令不足
+    ERR_CODE_AVATAR_WRONG_INDEX              = 1077; // 头像的index错误
+    ERR_CODE_INTRO_WRONG_LENGTH              = 1078; // 简介长度错误
+    ERR_CODE_INTRO_BAD_WORD                  = 1079; // 简介带有敏感词
+    ERR_CODE_ERR_PUSH_EVENT                  = 1080; // push event错误, 服务器没有定义
+    //gacha
+    ERR_CODE_ERR_GACHA_ERR_PACKAGEID         = 1081; // 包ID错误
+
+    ERR_CODE_ERR_GACHA_END                   = 1095; // push event错误, 服务器没有定义
+    ERR_CODE_MARKET_OLD_DATA                 = 1096; // 客户端商店数据为过期
+    
+
+    // 联盟相关
+    ERR_CODE_UNION_OP_NO_AUTHORITY           = 1100; // 联盟操作没有权限执行
+    ERR_CODE_UNION_NAME_ALREADY_EXIST        = 1101; // 联盟名已存在
+    ERR_CODE_UNION_NAME_LEN_LIMIT            = 1102; // 联盟名长度限制
+    ERR_CODE_UNION_NAME_BAD_WORD             = 1103; // 联盟名包含敏感词
+    ERR_CODE_UNION_NOT_EXIST                 = 1104; // 联盟不存在
+    ERR_CODE_UNION_ALREADY_APPLY             = 1105; // 玩家已经申请该联盟
+    ERR_CODE_UNION_NOT_APPLY                 = 1107; // 玩家没有申请该联盟
+    ERR_CODE_UNION_MEMBER_NOT_EXIST          = 1108; // 玩家不在该联盟
+    ERR_CODE_UNION_TITLE_NOT_EXIST           = 1109; // 该职位不存在
+    ERR_CODE_UNION_CANNOT_APPOINT            = 1110; // 不能任命该成员
+    ERR_CODE_UNION_CANNOT_REMOVE             = 1111; // 不能移除该成员
+    ERR_CODE_UNION_CANNOT_DEMISE             = 1112; // 不能禅让给该成员
+    ERR_CODE_UNION_QUIT_COOLDOWN             = 1113; // 玩家在退盟冷却中
+    ERR_CODE_UNION_APPLY_MAX_NUM             = 1114; // 已达最大联盟申请数量
+    ERR_CODE_UNION_MEMBER_FULL               = 1115; // 联盟成员已满
+    ERR_CODE_UNION_JOIN_WRONG_AREA           = 1116; // 不能申请或加入其他区域的联盟
+    ERR_CODE_UNION_JOIN_FORBID               = 1117; // 联盟申请或加入条件：禁止加入
+    ERR_CODE_UNION_PLAYER_ALREADY_IN_UNION   = 1118; // 玩家已经加入了联盟
+    ERR_CODE_UNION_CREATE_MAIN_CITY_LIMIT    = 1119; // 创建联盟时城主府等级不足
+    ERR_CODE_UNION_CREATE_RES_COIN_LIMIT     = 1120; // 创建联盟时金币不足
+    ERR_CODE_UNION_TITLE_NUM_FULL            = 1121; // 联盟该职位已满
+    ERR_CODE_UNION_NEED_APPLY                = 1122; // 需要申请加入
+    ERR_CODE_UNION_CANNOT_JOIN               = 1123; // 不能直接加入
+    ERR_CODE_UNION_WRONG_JOIN_LIMIT          = 1124; // 设置了错误的联盟加入条件
+    ERR_CODE_UNION_CANNOT_DONATE             = 1125; // 不能捐献
+    ERR_CODE_UNION_WRONG_RELATION            = 1126; // 设置了错误的联盟关系
+    ERR_CODE_UNION_RELATION_NUM_FULL         = 1127; // 联盟外交关系已达上限
+    ERR_CODE_UNION_RELATION_CANNOT_CHANGE    = 1128; // 联盟外交关系不能改变
+    ERR_CODE_UNION_MARK_NUM_FULL             = 1129; // 联盟标记数量已达上限
+    ERR_CODE_UNION_MARK_NAME_LEN_LIMIT       = 1130; // 联盟标记名长度限制
+    ERR_CODE_UNION_MARK_CONTENt_LEN_LIMIT    = 1131; // 联盟标记内容长度限制
+    ERR_CODE_UNION_MARK_BAD_WORD             = 1132; // 联盟标记包含敏感词
+    ERR_CODE_UNION_DESC_LEN_LIMIT            = 1133; // 联盟描述长度限制
+    ERR_CODE_UNION_DESC_BAD_WORD             = 1134; // 联盟描述包含敏感词
+    ERR_CODE_UNION_NO_DEMISE                 = 1135; // 没有发起禅让
+    ERR_CODE_UNION_CANNOT_SWAP_TITLE         = 1136; // 不能交换两个官员的职位
+    ERR_CODE_UNION_CANNOT_DISSOLVE           = 1137; // 不能解散联盟
+
+    // 沦陷相关
+    ERR_CODE_FALLEN_NOT_FALLEN               = 1140; // 没有沦陷
+    ERR_CODE_FALLEN_CANNOT_PAY_REVOLT_RES    = 1141; // 不能上缴反叛资源
+
+    // 演武 1150 ~ 1200
+    ERR_CODE_DRILL_ID_NOT_EXIST              = 1150; // 非法关卡ID
+    ERR_CODE_DRILL_ID_IS_NOT_OPEN            = 1151; // 关卡没有开启
+    ERR_CODE_DRILL_ID_IS_ALREADY_OPEN        = 1152; // 关卡已经打开
+    ERR_CODE_DRILL_NO_MEET_CONDITION         = 1153; // 关卡不能打开（前置条件不满足）
+    ERR_CODE_DRILL_CANT_ATTACK_TILE          = 1154; // 不能攻击关卡土地（没有连接地）
+    ERR_CODE_DRILL_TILE_IS_ALREADY_OCCUPY    = 1155; // 土地已经被占领
+    ERR_CODE_DRILL_INVALID_TILE_POS          = 1156; // 土地位置错误
+    ERR_CODE_DRILL_HEROS_WRONG_NUMBER        = 1157; // 攻击部队英雄数量错误
+    ERR_CODE_DRILL_HERO_NOT_EXIST            = 1158; // 攻击部队英雄不存在
+    ERR_CODE_DRILL_HEROS_NOT_REACH_TILE      = 1159; // 攻击部队配置不满足土地要求（英雄数量，Cost）
+    ERR_CODE_DRILL_NO_ENOUGH_COIN            = 1160; // 金币不够
+    ERR_CODE_DRILL_NO_PASS                   = 1161; // 当前关卡每通过，不能开启下一关（教学演武有效）
+    ERR_CODE_DRILL_IN_CD                     = 1162; // 关卡处于冷却期，不能开启下一关
+    ERR_CODE_DRILL_TOO_DIFFICULTY            = 1163; // 前一难度没有通关，不能开启当前难度关卡
+    ERR_CODE_DRILL_TUTORIAL_CANT_SKIP        = 1164; // 教学演武不能跳过动画学演武有效）    
+    ERR_CODE_DRILL_TUTORIAL_NO_STATISTIC     = 1165; // 教学演武没有统计数据
+    ERR_CODE_DRILL_DUPLICATE_HERO            = 1166; // 演武攻击部队，武将重复
+
+    // 建造队列已满
+    ERR_CODE_BUILD_QUEUE_FULL                = 1200; // 建造队列已满
+
+    // 登录天数奖励
+    ERR_CODE_LOGIN_DAY                       = 1201; // 登录天数不足
+    ERR_CODE_ERR_TASK_ID                     = 1202; // 任务ID错误
+    ERR_CODE_ERR_TASK_ALREADY_COMPLETE       = 1203; // 任务已经完成
+    ERR_CODE_ERR_TASK_ALREADY_AWARD          = 1204; // 任务已经领奖
+    ERR_CODE_ERR_LOGIN_EVENT_MORE            = 1205; // 登录超过30天
+    ERR_CODE_ERR_LOGIN_EVENT_AWARD           = 1206; // 当天奖励已领取
+    
+    // 邮件 1210 - 1219
+    ERR_CODE_MAIL_NOT_IN_UNION             = 1210; // 非联盟官员不能发送联盟邮件
+
+    // map相关 2000 - 3000 troop/march/fighter/tile
+    ERR_CODE_ALLOC_MAP_POS_FAILED        = 2001; // 玩家主城位置分配错误
+    ERR_CODE_NOT_TILE_OWNER              = 2002; // 玩家不是土地所有者
+    ERR_CODE_TILE_ON_PROTECT             = 2003; // 土地在占免期
+    ERR_CODE_TILE_IS_GIVING_UP           = 2004; // 土地在放弃过程中
+    ERR_CODE_INVALID_POS                 = 2005; // 土地位置错误
+    ERR_CODE_TILE_NOT_GIVING_UP          = 2006; // 土地不在放弃过程中
+    ERR_CODE_INVALID_GRID_POS            = 2007; // 土地所在格子位置错误
+    ERR_CODE_TOO_MUCH_GRIDS              = 2008; // 拉取土地的格子过多
+    ERR_CODE_MARCH_REQ_TYPE_ERR          = 2009; // 行军请求类型错误
+    ERR_CODE_ATTACK_NO_NEARBY_TILE       = 2010; // 出征没有连通地块
+    ERR_CODE_TILE_CANNOT_ATTACK          = 2011; // 地块不能被攻击
+    ERR_CODE_PLAYER_NOT_TILE_OWNER       = 2012; // 玩家不是地块所有者
+    ERR_CODE_ERR_TROOP_ID                = 2013; // 没有此ID队伍
+    ERR_CODE_HERO_ISNOT_IN_TROOP         = 2014; // 英雄不在部队中
+    ERR_CODE_FIGHTER_NUM_LIMITED         = 2015; // 队伍中英雄数量达到上限
+    ERR_CODE_TROOP_CTL_CONSCRIPT_FIGHTER = 2016; // 部队配置正在征兵的fighter
+    ERR_CODE_ERR_MARCH_ID                = 2017; // 没有找到此ID的行军
+    ERR_CODE_RETURN_MARCH_ERR_TIME       = 2018; // 已超过可撤回时间
+    ERR_CODE_ERR_TROOP_NO                = 2019; // 部队数量错误
+    ERR_CODE_TROOP_NOT_FOUND             = 2020; // 部队没有找到
+    ERR_CODE_ERR_TROOP_STATE             = 2021; // 部队状态错误
+    ERR_CODE_FIGHTER_SERIOUS_HURT        = 2022; // 部队成员重伤
+    ERR_CODE_ERR_FIGHTER_POS             = 2023; // 部队成员位置错误
+    ERR_CODE_TROOPS_IN_TWO_CITIES        = 2024; // 2支部队不在同一城中
+    ERR_CODE_FULL_CONSCRIPT_QUEUE        = 2025; // 征兵队列已满
+    ERR_CODE_HERO_ENERGY_LACK            = 2026; // 体力不足
+    ERR_CODE_TROOP_CANNOT_RETURN         = 2027; // 部队无法撤退
+    ERR_CODE_TROOP_IS_NOT_IN_CITY        = 2028; // 部队不在城中
+    ERR_CODE_TRAIN_CNT_ERR               = 2029; // 练兵次数
+    ERR_CODE_CITY_REDIF_LACK             = 2030; // 预备兵不足
+    ERR_CODE_REDIF_CONSCRIPT_REQ_CNT_ERR = 2031; // cnt <= 0
+    ERR_CODE_CITY_COST_LACK              = 2032; // 城池cost不足
+    ERR_CODE_FIGHTER_HP_MORE_THAN_MAX    = 2033; // 征兵数量超过部队上限
+    ERR_CODE_CONSCRIPT_REQ_CNT_ERR       = 2034; // normal < 0 || redif < 0
+    ERR_CODE_FIGHTER_IS_NOT_CONSCRIPT    = 2035; // 英雄没有在征兵
+    ERR_CODE_RETURN_TROOP_REQ_STATE_ERR  = 2036; // 返回部队请求部队转态与部队不一致
+    ERR_CODE_TROOPS_CONNOT_HAVE_SAME_HERO= 2037; // 所有部队不能上阵相同的英雄
+    ERR_CODE_FILTER_RADIUS_TOO_LARGE     = 2038; // 筛选土地半径过大
+    ERR_CODE_PLAYER_NOT_CITY_OWNER       = 2039; // 玩家不是城池的所有者
+    ERR_CODE_TRANSFER_CITY_TROOPS_FULL   = 2040; // 调动指定的城市队伍已满
+    ERR_CODE_TRANSFER_POS_SAME_TROOP_POS = 2041; // 调动指定的位置与部队现在的位置一致
+    ERR_CODE_POS_CONNOT_BUILD_CITY       = 2042; // 指定位置不能修建城池
+    ERR_CODE_CONNOT_BUILD_THIS_CITY_TYPE = 2043; // 指定的城池类型不能修建
+    ERR_CODE_BUILD_CITY_FULL             = 2044; // 指定修建的城池以满
+    ERR_CODE_TILE_ETYPE_IS_NOT_NOTHING   = 2045; // 屯田,练兵,扫荡指定的土地上面有建筑
+    ERR_CODE_CONNOT_DISMANTLE_CITY_TYPE  = 2046; // 不能拆除的建筑类型
+    ERR_CODE_CITY_STATE_CONNOT_DISMANTLE = 2047; // 建筑状态不能别拆除
+    ERR_CODE_GIVEUP_SP_ENTITY            = 2048; // 放弃土地上拥有特殊的实体, 主城, 分城, 自己的城区
+    ERR_CODE_FIGHTER_ALREADY_CONSCRIPT   = 2049; // 英雄正在征兵，不能再次征兵
+    ERR_CODE_MARCH_CONSCRIPT_FIGHTE      = 2050; // 英雄在征兵, 不能出征
+    ERR_CODE_OLD_FORTRESS_FULL           = 2051; // 部队从要塞1调动到要塞2, 想撤退, 但是要塞1已经满了
+    ERR_CODE_OLD_FORTRESS_NOT_EXIST      = 2052; // 部队从要塞1调动到要塞2, 想撤退, 但是要塞1不存在
+    ERR_CODE_TROOP_NEED_FIRST_FIGHTER    = 2053; // 部队必须配置大营才可出征
+    ERR_CODE_CANNOT_MOVE_CITY_HERE       = 2054; // 不能迁城到此地
+    ERR_CODE_MOVE_CITY_BUILD_QUEUE       = 2055; // 有正在升级的建筑
+    ERR_CODE_MOVE_CITY_CONSCRIPT_QUEUE 	 = 2056; // 有正在征兵的队伍
+    ERR_CODE_MOVE_CITY_FALLEN 	 		 = 2057; // 被沦陷
+    ERR_CODE_MOVE_CITY_DISMANTLE 	 	 = 2058; // 处于拆除中
+    ERR_CODE_CITY_IN_INVINCIBLE          = 2059; // 坚守中
+    ERR_CODE_CITY_INVINCIBLE_STATE       = 2060; // 状态不是normal，不能坚守
+    ERR_CODE_EPIC_CANNOT_AWARD           = 2061; // 天下大势不能领奖
+    ERR_CODE_EPIC_PLAYER_CANNOT_AWARD    = 2062; // 玩家天下大势不能领奖
+    ERR_CODE_PRESTIGE_NOT_ENOUGH         = 2063; // 声望不足
+
+}
+
+// 为了保证实体的type唯一, 这里定义已经存在的实体类型, 需要与 iproto/type_def.go保持一致
+// 主城: 1
+// 玩家城区: 2
+// 分城: 3
+// 玩家要塞: 4
+// 废墟: 5
+// 野外要塞: 6
+// npc城池: 7
+// 玩家: 8, 服务器使用
+// 联盟: 9, 服务器使用
+// npc城区: 10, 服务器使用
+enum ENTITY_TYPE {
+    ENTITY_TYPE_NOTHING         = 0;  // 土地
+    ENTITY_TYPE_MAIN_CITY       = 1;  // 主城中心
+    ENTITY_TYPE_CITY_DST        = 2;  // 主城/分城城区
+    ENTITY_TYPE_CITY_SUB        = 3;  // 分城中心
+    ENTITY_TYPE_PFORTRESS       = 4;  // 玩家要塞
+    ENTITY_TYPE_RUINS           = 5;  // 废墟
+    ENTITY_TYPE_NFORTRESS       = 6;  // 野外要塞
+    ENTITY_TYPE_NPC_CITY        = 7;  // npc城池
+    ENTITY_TYPE_NPC_CITY_DST    = 10; // npc城池
+    ENTITY_TYPE_TERRIAN         = 11; // 地形，不能走到的地块
+    ENTITY_TYPE_NPC_GATE        = 12; // npc关卡
+}
+
+// CITY_TYPE 是 ENTITY_TYPE 的子集, 这里在协议里面显示区分出来
+// CITY_TYPE 与对应的 ENTITY_TYPE 值必须定义一样
+enum CITY_TYPE {
+    CITY_TYPE_ERR         = 0; // err 不应该存在
+    CITY_TYPE_MAINCITY    = 1; // 主城
+    CITY_TYPE_SUBCITY     = 3; // 分城
+    CITY_TYPE_PFORTRESS   = 4; // 玩家要塞
+    CITY_TYPE_RUINS       = 5; // 废墟
+    CITY_TYPE_NFORTRESS   = 6; // 野外要塞
+    CITY_TYPE_NPCCITY     = 7; // npc城池
+}
+
+enum CITY_STATE {
+    CITY_STATE_BUILD                = 0; // 修建中
+    CITY_STATE_NORMAL               = 1; // 正常
+    CITY_STATE_DISMANTLE            = 2; // 拆除中
+    CITY_STATE_INVINCIBLE_PREPARE   = 3; // 坚守准备
+    CITY_STATE_INVINCIBLE           = 4; // 坚守
+    CITY_STATE_INVINCIBLE_CD        = 5; // 坚守CD
+}
+
+enum TROOP_STATE {
+    TROOP_STATE_INCITY    = 0; // 在城池中
+    TROOP_STATE_MARCH     = 1; // 行军中
+    TROOP_STATE_DRAW_REST = 2; // 平局
+    TROOP_STATE_GARRISON  = 3; // 驻守
+    TROOP_STATE_RETURN    = 4; // 返回
+    TROOP_STATE_TRAIN     = 5; // 练兵
+    TROOP_STATE_COLLECT   = 6; // 屯田
+    TROOP_STATE_TRANSFER  = 7; // 调动
+    TROOP_STATE_INBATTLE  = 8; // 战斗中（没有出战斗结果）
+}
+
+enum TILE_ACTION_TYPE {
+    TILE_ACTION_TYPE_ERR                        = 0;
+    TILE_ACTION_TYPE_ATTACK                     = 1;  // 出征
+    TILE_ACTION_TYPE_GARRISON                   = 2;  // 驻守
+    TILE_ACTION_TYPE_MOPPING                    = 3;  // 扫荡
+    TILE_ACTION_TYPE_TRAIN                      = 4;  // 练兵
+    TILE_ACTION_TYPE_COLLECT                    = 5;  // 屯田
+    TILE_ACTION_TYPE_DRAW_REST                  = 6;  // 平局
+    TILE_ACTION_TYPE_TRANSFER                   = 7;  // 调动部队
+    TILE_ACTION_TYPE_RETREAT                    = 8;  // 撤退地块部队
+    TILE_ACTION_TYPE_RETREAT_ON_WAY             = 9;  // 撤退行军中的部队
+    TILE_ACTION_TYPE_RETREAT_TRANSFER           = 10; // 撤退调动部队
+}
+
+// 玩家能获得的物品类型
+enum ITEM_TYPE {
+    ITEM_TYPE_ERR           = 0;  // 错误, 用于表示错误
+    ITEM_TYPE_DIAMOND       = 1;  // 钻石
+    ITEM_TYPE_COIN          = 2;  // 钱币
+    ITEM_TYPE_RESOURCE      = 3;  // 资源: 木材, 石料, 粮草, 铁矿, 政令, 名望
+    ITEM_TYPE_HERO          = 4;  // 英雄
+    ITEM_TYPE_SKILL         = 5;  // 技能
+    //ITEM_TYPE_HERO_EXP    = 6;  // 英雄经验未使用
+    ITEM_TYPE_SKILL_EXP     = 7;  // 技能经验
+    ITEM_TYPE_SKILL_PRO     = 8;  // 技能研究度
+    ITEM_TYPE_GACHA_PKG     = 9;  // 卡包
+    ITEM_TYPE_REDIF         = 10; // 预备兵
+}
+
+// 资源id定义
+enum RESOURCE_ID {
+    RESOURCE_ERR        = 0; // 错误, 不应该存在
+    RESOURCE_FOOD       = 1; // 粮草
+    RESOURCE_STONE      = 2; // 石料
+    RESOURCE_WOOD       = 3; // 木材
+    RESOURCE_STEEL      = 4; // 铁矿
+    RESOURCE_PRESITGE   = 5; // 名望
+    RESOURCE_ORDER      = 6; // 政令    
+}
+
+// 邮件和聊天的类型定义
+enum MC_TYPE {
+    MAIL_TYPE_NONE      = 0;    // 错误
+    MAIL_TYPE_PLAYER    = 1;    // 个人邮件
+	MAIL_TYPE_SERVER    = 2;    // 全服邮件
+	MAIL_TYPE_UNION     = 3;    // 联盟邮件
+	MAIL_TYPE_SYSTEM    = 4;    // 系统邮件
+
+	CHAT_CHANNEL_PLAYER    = 10;   // 个人聊天频道
+	CHAT_CHANNEL_WORLD     = 11;   // 世界聊天频道
+	CHAT_CHANNEL_UNION     = 12;   // 联盟聊天频道
+}
+
+// 刷新方式
+enum REFRESH_TYPE {
+    REFRESH_NONE = 0;   // 未使用
+    REFRESH_ALL = 1;    // 全部刷新
+    REFRESH_INC = 2;    // 增量刷新
+}
+
+// 聊天消息状态
+enum CHAT_STATUS {
+    UNREAD = 0;
+    READ = 1;
+}
+
+// 登录类型
+enum LOGIN_ACTION {
+    LOGIN = 0;
+    REGISTER = 1;
+}
+
+// 联盟成员职位（包含非成员）
+enum UNION_TITLE_TYPE {
+    UNION_TITLE_NOT_MEMBER                = 0; // 非盟众
+    UNION_TITLE_LEADER                    = 1; // 盟主
+    UNION_TITLE_DEPUTY_LEADER             = 2; // 副盟主
+    UNION_TITLE_COMMANDER_A               = 3; // 指挥官
+    UNION_TITLE_COMMANDER_B               = 4; // 官员
+    UNION_TITLE_MEMBER                    = 5; // 盟众
+    UNION_TITLE_BANNED                    = 6; // 禁言
+}
+
+// 联盟操作ID（权限相关）
+enum UNION_OP_TYPE {
+    UNION_OP_DO_NOTHING                   = 0;
+    UNION_OP_CREATE_UNION                 = 1;    // 创建联盟
+    UNION_OP_GET_UNION_INFO_LIST          = 2;    // 查看联盟列表信息
+    UNION_OP_APPLY_UNION                  = 3;    // 申请加入联盟
+    UNION_OP_CANCEL_APPLY_UNION           = 4;    // 取消申请加入联盟
+    UNION_OP_JOIN_UNION                   = 5;    // 直接加入联盟
+    UNION_OP_DISSOLVE_UNION               = 101;  // 解散联盟
+    UNION_OP_DEMISE                       = 102;  // 禅让盟主
+    UNION_OP_SET_RELATION                 = 103;  // 设置同盟外交关系
+    UNION_OP_APPROVE_APPLY                = 105;  // 审批是否同意申请加入
+    UNION_OP_REMOVE_MEMBER                = 106;  // 移除成员
+    UNION_OP_SET_JOIN_LIMIT               = 107;  // 设置加入联盟条件
+    UNION_OP_SET_UNION_DESC               = 108;  // 设置联盟公告
+    UNION_OP_ADD_MARK                     = 110;  // 创建联盟标记
+    UNION_OP_APPOINT_MEMBER               = 111;  // 任命成员
+    UNION_OP_GIVEUP_TITLE                 = 114;  // 放弃职位
+    UNION_OP_GET_UNION_INFO               = 116;  // 查看联盟信息
+    UNION_OP_QUIT_UNION                   = 122;  // 退出联盟
+    UNION_OP_INVITE_JOIN_UNION            = 123;  // 邀请加入联盟
+    UNION_OP_DEAL_INVITE                  = 124;  // 处理联盟邀请
+    UNION_OP_FIND_UNION                   = 125;  // 查找联盟
+    UNION_OP_DONATE                       = 126;  // 联盟捐赠
+    UNION_OP_DEL_MARK                     = 127;  // 删除联盟标记
+    UNION_OP_SWAP_TITLE                   = 128;  // 替换职位
+    UNION_OP_CANCEL_DEMISE                = 129;  // 取消禅让
+    UNION_OP_SEND_UNION_MAIL              = 130;  // 发送联盟邮件
+}
+
+// 联盟加入条件
+enum UNION_JOIN_LIMIT {
+    UNION_JOIN_NO_LIMIT                  = 0;    // 没有条件，直接加入
+    UNION_JOIN_NEED_APPLY                = 1;    // 需要申请加入
+    UNION_JOIN_NO_APPLY_WITH_LIMIT       = 2;    // 无需申请，满足条件直接加入（暂未实现）
+    UNION_JOIN_FORBID                    = 3;    // 禁止加入
+}
+
+// 联盟关系
+enum UNION_RELATION_TYPE {
+    UNION_RELATION_NONE                  = 0;    // 无关系
+    UNION_RELATION_FRIENDLY              = 1;    // 友好关系
+    UNION_RELATION_HOSTILE               = 2;    // 敌对关系
+}
+
+// 联盟日志类型
+enum UNION_LOG_TYPE {
+    UNION_LOG_EVENT                      = 0;    // 联盟事件
+    UNION_LOG_MEMBER                     = 1;    // 联盟成员
+    UNION_LOG_FIGHT                      = 2;    // 联盟战斗
+    UNION_LOG_RELATION                   = 3;    // 联盟关系
+}
+
+// 联盟事件日志类型
+enum UNION_LOG_EVENT_TYPE {
+    UNION_LOG_EVENT_SETUP                = 0;    // 联盟%s成功建立
+    UNION_LOG_EVENT_LEVELUP              = 1;    // 联盟等级上升至%s
+    UNION_LOG_EVENT_CLOSE_APPLY          = 2;    // %s关闭了联盟申请
+}
+
+// 联盟成员日志类型
+enum UNION_LOG_MEMBER_TYPE {
+    UNION_LOG_MEMBER_JOIN                = 0;    // %s加入了联盟%s
+    UNION_LOG_MEMBER_APPOINT             = 1;    // %s将%s任命为%s
+    UNION_LOG_MEMBER_DISMISS             = 2;    // %s罢免了%s的%s官位
+    UNION_LOG_MEMBER_QUIT                = 3;    // %s离开了%s
+    UNION_LOG_MEMBER_REMOVE              = 4;    // %s被%s移出了联盟
+    UNION_LOG_MEMBER_ATTACKED_LOST_CITY  = 5;    // %s被攻击失去分城
+    UNION_LOG_MEMBER_ATTACKED_MCITY      = 6;    // %s的主城被攻击
+    UNION_LOG_MEMBER_ATTACKED_FALLEN     = 7;    // %s被联盟%s的%s攻击沦陷
+}
+
+// 联盟战斗日志类型
+enum UNION_LOG_FIGHT_TYPE {
+    UNION_LOG_FIGHT_ATTACK               = 0;    // %s对友好联盟%s的%s进行了攻击
+    UNION_LOG_FIGHT_LOST_CITY            = 1;    // 联盟失去了城池%s
+}
+
+// 联盟关系日志类型
+enum UNION_LOG_RELATION_TYPE {
+    UNION_LOG_RELATION_SETUP             = 0;    // %s将联盟%s设置为%s关系
+}
+
+// 联盟距离
+enum UNION_DISTANCE_TYPE {
+    UNION_DISTANCE_NEAR                  = 0;    // 近，[0, 40)
+    UNION_DISTANCE_MID                   = 1;    // 中，[40,80)
+    UNION_DISTANCE_FAR                   = 2;    // 远，[80, -)
+}
+
+// 战役类型
+enum CONFLICT_TYPE {
+    CONFLICT_TYPE_PVP = 0;
+    CONFLICT_TYPE_PVE = 1;
+}
+
+enum BATTLE_RESULT {
+    BATTLE_RESULT_ATKWIN    = 0;  // 攻方胜
+    BATTLE_RESULT_DEFWIN    = 1;  // 守方胜
+    BATTLE_RESULT_DRAW      = 2;  // 平局
+    BATTLE_RESULT_BOTH_DEAD = 3;  // 两败俱伤
+    BATTLE_RESULT_NO_FIGHT  = 4;  // 未战（无原因）
+    BATTLE_RESULT_PROTECT   = 5;  // 未战 免战期间
+    BATTLE_RESULT_NO_NEARBY = 6;  // 未战 没有连接地
+    BATTLE_RESULT_GUARD     = 7;  // 未战 坚守中
+    BATTLE_RESULT_EXCEPTION = 9;  // 战斗脚本异常
+    BATTLE_RESULT_TILE_FULL = 10; // 战胜，土地达到上限，不能占领
+}
+
+// 城建buff定义  ps:百分比值已经计算好了, 如城建征兵时间减少70%, conscript_time = 0.3
+// cost                     统帅
+// conscript_row            征兵队列上限
+// troop_num                部队上限
+// conscript_time           征兵时间百分比
+// pos_four_num	            可以放置四号位英雄的部队数量
+// pos_five_num             可以放置五号位英雄的部队数量
+// redif_recover_time       预备兵恢复时间百分比
+// redif_max                预备兵上限
+// hero_hp                  武将额外带兵数
+// hero_energy_recover      武将体力恢复时间百分比
+// quick_harvest_stone      屯田收益百分比
+// quick_harvest_wood
+// quick_harvest_steel
+// quick_harvest_food
+// building_level           建筑等级(要塞等级)
+// city_durability          城市耐久度
+// durability_around_abs    城区耐久度增加值
+// warning_time             预警时间
+// open_conscript           开启征兵功能
+
+// push事件定义
+// push_up_build_completed          建筑升级完成
+// push_refresh_tax                 可以收税
+// push_conscript_completed         征兵完成
+// push_player_be_attacked          玩家被攻击
+// push_union_be_attacked           同盟受到攻击
+// push_refresh_gacha               刷新gacha免费次数
+// push_new_mail                    收到新邮件
+// push_friendly_union_be_attacked  友盟收到攻击
+
+enum BATTLE_AWARD_TYPE {
+    BATTLE_AWARD_SUPPLY = 0; //补给
+}
+
+enum OWNER_TYPE {
+    OCCUPY_OWNER_TYPE_PLAYER = 0;
+    OCCUPY_OWNER_TYPE_UNION  = 1;
+}
+
+enum DRILL_ID_DEF {
+    DRILL_NO_SELECT    = 0;    // 没有选择关卡
+    DRILL_TUTORIAL_MIN = 1;    // 教学关最小关卡ID
+    DRILL_TUTORIAL_MAX = 1000; // 教学关最大关卡ID
+    DRILL_NORMAL_MIN   = 1001; // 日常关最小关卡ID
+    DRILL_NORMAL_MAX   = 2000; // 日常关最大关卡ID
+}
+
+// "tutorial_level"表中"request"列值定义
+enum DRILL_CONDITION_TYPE {
+    DRILL_CONDITION_NO      = 0; // 没有前置条件
+    DRILL_CONDITION_MISSION = 1; // 任务类前置条件
+    DRILL_CONDITION_WORLD   = 2; // 天下大势类前置条件
+}
+
+// "tutorial_maptile"表中"positionAttribute"列的值定义
+enum DRILL_TILE_ATTRIBUTE {
+    DRILL_TILE_NORMAL  = 0;   // 普通土地
+    DRILL_TILE_START   = 1;   // 关卡起始土地
+    DRILL_TILE_END     = 2;   // 关卡终止土地
+    DRILL_TILE_DURABLE = 100; // 大于等于该值时，表示该土地耐久值
+}
+
+enum EPIC_STATE {
+    EPIC_STATES_INIT		= 0;
+    EPIC_STATES_START		= 1;
+    EPIC_STATES_COMPLETE	= 2;
+    EPIC_STATES_AWARD   	= 3;
+}
+
+enum EPIC_PLAYER_STATE {
+    EPIC_PLAYER_STATES_NONE 	= 0;
+    EPIC_PLAYER_STATES_EXPIRE	= 1;
+    EPIC_PLAYER_STATES_AWARDED  = 2;
+}
+
+// 服务器开放状态
+enum SRV_STATUS {
+    SRV_STATUS_OPEN      = 0; // 开放
+    SRV_STATUS_CLOSE     = 1; // 维护
+}
+
+// 兵种类型
+enum HERO_ARM_TYPE {
+    HERO_ARM_NONE = 0;  // 未知兵种
+    
+    // 步兵系
+    HERO_ARM_INFANTRY        = 10; // 步兵
+    HERO_ARM_HEAVY_INFANTRY  = 11; // 重步兵
+    HERO_ARM_GUARD_INFANTRY  = 12; // 近卫
+    HERO_ARM_SPEAR_INFANTRY  = 13; // 长枪兵
+    HERO_ARM_SAVAGE_INFANTRY = 14; // 蛮兵
+    HERO_ARM_RATTAN_INFANTRY = 15; // 藤甲兵
+
+    // 骑兵系
+    HERO_ARM_CAVALRY          = 20; // 骑兵
+    HERO_ARM_LIGHT_CAVALRY    = 21; // 轻骑兵
+    HERO_ARM_HEAVY_CAVALRY    = 22; // 重骑兵
+    HERO_ARM_IRON_CAVALRY     = 23; // 铁骑兵
+    HERO_ARM_BOW_CAVALRY      = 24; // 弓骑兵
+    HERO_ARM_ELEPHANT_CAVALRY = 25; // 象兵
+
+    // 弓兵系
+    HERO_ARM_BOWMEN       = 30; // 弓兵
+    HERO_ARM_DEAD_BOWMEN  = 31; // 死士
+    HERO_ARM_LONG_BOWMEN  = 32; // 长弓兵
+    HERO_ARM_CROSS_BOWMEN = 33; // 弩兵
+}

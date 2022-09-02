@@ -1,0 +1,259 @@
+syntax = "proto3";
+package cspb;
+import "def.proto";
+import "struct.proto";
+
+/* 命名规范:
+ * 消息名: 驼峰
+ * 字段: 下划线分隔
+ */
+
+
+
+message CommonAck{
+    uint32       err_req     = 1;
+    ERR_CODE     err_code    = 2;
+    string       name        = 3;
+}
+
+message Server {
+    int32  server_id = 1;
+    string name     =2;
+    int32 status      = 3;
+}
+
+// udid 历史角色列表
+message UdidAck {
+    int64      lastLogin = 1;
+    repeated    Character characters = 2;
+}
+
+
+
+// 对应所有登录/注册响应: CharCreateReq CharLoginReq FastLoginReq ...
+message LoginAck {
+    int64       player_id = 1;
+    PlayerInfo playerInfo = 2;
+    ERR_CODE err          = 3;
+    int64      SessionID  = 4;
+
+}
+// 服务器用
+message GsLoginAck {
+    int64 player_id     = 1; // Server Use
+    string access_token = 2;
+    string name         = 3; // 玩家名字
+    int64 account_id    = 4;
+    int32 server_id     = 5;
+    string udid         = 6;
+    string ip           = 7;
+    LOGIN_ACTION action = 8;
+}
+
+message BindPassportAck {
+    string      error        = 1;
+    string      access_token = 2;
+    repeated    Character characters = 3;
+    int64       account_id  = 4;
+    repeated    Server servers = 5;
+    int32       recommand_server = 6;
+}
+// 更新平台Token
+message UpdateTokenReq {
+    string type     = 1;
+    string passport = 2;
+    string password = 3;
+    string deviceID = 4;
+}
+
+// 更新平台Token
+message UpdateTokenAck {
+    ERR_CODE errCode    = 1;
+    string accessToken = 2;
+    int64 accountID    = 3;
+    int64 token_explre_at  = 4;
+}
+
+// 客户端所需的平台信息
+message PlatformNtf {
+    string gameID       = 1;
+    string clientID     = 2;
+    string chatURL      = 3;
+    string payURL       = 4;
+    string payToken     = 5;
+    string chatAccount  = 6;
+    string chatPassword = 7;
+    string transURL     = 8;
+}
+
+// 角色元信息
+message CharMeta {
+    string      name         = 1;
+}
+
+message Character {
+    string      passport     = 1;
+    int32       server_id    = 2;
+    int64       player_id    = 3;
+    CharMeta    meta         = 4;
+    int64       LastLogin    = 5;
+}
+// 拉取设备历史账号
+message UdidReq {
+    ClientInfo  c_info = 1;
+    string token = 2;
+}
+
+// 交互秘钥 -- 与客户端消息加密用
+message KeyExchageReq {
+    bytes key = 1; // 客户端生成的加密后的key(公钥加密)
+}
+
+message KeyExchageAck {
+    bytes key = 1; // 服务器返回的加密后的key(用客户端的传过来的key加密生成的)
+}
+
+// Auth请求  通过HTTP POST Form发送 不走Protobuf编码
+// 放在这里作原型声明
+message AuthReq{
+    string type     = 1;
+    string passport     = 2;
+    string password = 3;
+    ClientInfo  c_info = 4;
+    string signature              = 5;
+    int32 clientState             = 6;
+}
+// 当error为"" 其余字段才有效
+message AuthAck{
+    string      error        = 1;
+    string      access_token = 2;
+    repeated    Character characters = 3;
+    int64       account_id  = 4;
+    repeated    Server servers = 5;
+    int32       recommand_server = 6;
+    string      type     = 7;
+    int32       clientState             = 8;
+    int64       token_explre_at    = 9;
+}
+
+// 获取gs
+message GetGsReq {
+    string region_id = 1;
+    string locale    = 2;
+}
+
+message GetGsAck {
+    repeated Server servers = 1;
+}
+
+// 绑定玩家角色和账号
+message BindPassportReq {
+    string type     = 1;
+    string passport = 2;
+    string password = 3;
+    ClientInfo  c_info = 4;
+    bool   is_new   = 5;
+    int64 player_id = 6; // server use
+}
+
+// 客户端信息
+message ClientInfo {
+    string udid             = 1;
+    string mac_addr         = 2;
+    string ip               = 3;  //需要真实ip ipv4
+    string locale           = 4;
+    string push_type        = 5; // apns , gcm, fcm
+    string push_token       = 6; // Apple Device Token或Android GCM Registration ID
+    string platform         = 7; // IOS、ANDROID、WEIXIN、WEB
+    string bundle_id        = 8;
+    string app_version      = 9;
+    string os_version       = 10;
+    string device_name      = 11;
+    string publisher_channel  = 12;
+
+    string locale_language    = 14;
+    string device_state       = 15;
+    int32  is_simulator       = 16;
+    string idfa               = 17;
+    string idfv               = 18;
+    string google_aid         = 19;
+    string android_id         = 20;
+    string device_id          = 21;  //IMEI/MEID
+    float  latitude           = 22;
+    float  longitude          = 23;
+    float  altitude           = 24;
+    string network_type       = 25;
+    string third_part_device_id = 26;
+    string build                = 27;  //system build number
+    string open_udid            = 28;  //OPEN UDID
+
+}
+
+// 角色创建
+message CharCreateReq{
+    string access_token = 1;
+    string name         = 2; // 玩家名字
+    int64 account_id    = 3;
+    int32 server_id     = 4;
+    ClientInfo  c_info  = 5;
+    int64 player_id     = 6; // Server Use
+    string type         = 7;
+    string passport     = 8;
+}
+
+// 角色登录
+message CharLoginReq{
+    string access_token = 1;
+    string name         = 2; // 玩家名字
+    int64 account_id    = 3;
+    int32 server_id     = 4;
+    ClientInfo  c_info  = 5;
+    int64 player_id     = 6;
+    string type         = 7;
+    string passport     = 8;
+}
+
+// 快速登录 服务器内部测试使用 客户端禁用
+// 该请求无需提供PlayerId和帐号相关信息，会跳过一切和平台的交互
+// 最终登录或创建一个专用于FastLogin的PlayerId
+message FastLoginReq{
+    string secret       = 1;
+    int32 server_id     = 2;
+    int64 player_id     = 3; // 不用填 服务器生成
+    string name         = 4;
+}
+
+message LogoutReq {
+    int64 player_id = 1;
+}
+
+
+message CharacterCreateCheckReq{
+    CharCreateReq req = 1;
+    int64         aid = 2;
+
+}
+
+message CharacterCreateCheckAck{
+    ERR_CODE err = 1;
+    CharCreateReq req = 2;
+    int64         aid = 3;
+}
+
+
+message PlayCreateAck{
+    ERR_CODE      err        = 1;
+    CharCreateReq req        = 2;
+    PlayerInfo    playerInfo = 3;
+    int64         Aid        = 4;
+}
+message AccountLinkReq {
+    string accessToken = 1;
+    string type        = 2;
+    string passport    = 3;
+    string password    = 4;
+}
+
+message AccountLinkAck {
+    ERR_CODE errCode = 1;
+}

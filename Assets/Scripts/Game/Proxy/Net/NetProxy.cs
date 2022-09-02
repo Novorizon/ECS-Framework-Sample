@@ -1,11 +1,9 @@
-using Google.Protobuf;
 using Net;
-using Proto;
 using PureMVC.Patterns.Proxy;
 using System;
-using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace Game
 {
@@ -24,188 +22,243 @@ namespace Game
     public delegate void AckHandler(object data);
     public class NetProxy : Proxy
     {
-
         public new static string NAME = typeof(NetProxy).FullName;
-        SocketClient socketClient;
+        public static TCPClientState Client = null;
+        public static ManualResetEvent manualEvent = null;
+
+        public NetState CurrentNetState = NetState.disconnected;
+
+        public long LastConnectTime = -1;
+        public int ReConnectTime;
+
+        private string host = "127.0.0.1";
+        private int port = 6688;
+
+        private MessageProxy messageProxy = null;
+        private AuthProxy authProxy = null;
+
+        private Thread thread;
+        private int ThreadSleepTime = 5000;
+        private int TRY_TIME = 6;
+        private const int MAX_READ = 8192;
+        private byte[] byteBuffer = new byte[MAX_READ];
+
         private bool IsConnected = false;
         private bool isInitialized = false;
 
+        private long _serverTime;
+        private float _nowTime;
         public byte[] TempKey = null;
         public byte[] SessionKey = null;
 
-        public AuthVO authVO;
         CharacterProxy characterProxy = null;
 
-        private long _serverTime;
-        private float _nowTime;
-        private Dictionary<Type, AckHandler> _ackHandlerDic;
-        public NetState CurrentNetState = NetState.disconnected;
-
-        static Queue<KeyValuePair<Type, object>> sEvents = new Queue<KeyValuePair<Type, object>>();
 
         public NetProxy() : base(NAME) { }
 
         public override void OnRegister()
         {
             base.OnRegister();
-            _ackHandlerDic = new Dictionary<Type, AckHandler>();
             characterProxy = Facade.RetrieveProxy(CharacterProxy.NAME) as CharacterProxy;
+            authProxy=Facade.RetrieveProxy(AuthProxy.NAME) as AuthProxy;
         }
 
         public override void OnRemove()
         {
         }
 
-        public void RegisterHandler(Type type, AckHandler handler)
-        {
-            //one type may have more than one handler
-            if (_ackHandlerDic.ContainsKey(type))
-            {
-                _ackHandlerDic[type] += handler;
-            }
-            else
-            {
-                _ackHandlerDic.Add(type, handler);
-            }
-        }
-
-        public void RemoveHandler(Type type, AckHandler handler)
-        {
-            if (_ackHandlerDic != null && _ackHandlerDic.ContainsKey(type))
-            {
-                _ackHandlerDic[type] -= handler;
-            }
-        }
-
-
-        public SocketClient SocketClient
-        {
-            get
-            {
-                if (socketClient == null)
-                {
-                    socketClient = new SocketClient();
-                }
-                return socketClient;
-            }
-        }
 
         public bool IsNetConnected() => IsConnected;
 
-        void Init()
+        public void Start()
         {
-            NetDebug.instance.Log("Enter NetManager", NET_DEBUG_MESSAGE_TYPE.NORMAL);
+            Debug.Log("Enter NetManager");
             if (isInitialized)
             {
-                NetDebug.instance.Log("NetManager is Initialized and return", NET_DEBUG_MESSAGE_TYPE.NORMAL);
+                Debug.Log("NetManager is Initialized and return");
                 return;
             }
 
-            _ackHandlerDic = new Dictionary<Type, AckHandler>();
-
-            authVO = new AuthVO();
-            //SocketClient.Init();
-
-            //SetServerConfig();
-            //SetClientInfo();
-
+            host = "127.0.0.1";
+            port = 6688;
             _serverTime = 0;
             _nowTime = Time.realtimeSinceStartup;
-
+            CurrentNetState = NetState.connected;
+            manualEvent = new ManualResetEvent(true);
             isInitialized = true;
-            NetDebug.instance.Log("NetManager initialision is done", NET_DEBUG_MESSAGE_TYPE.NORMAL);
 
-            if (!IsConnected)
-                SocketClient.Init();
-        }
-
-        public void ConnectSocket()
-        {
-            if (isInitialized && (!IsConnected))
-            {
-                SocketClient.Init();
-            }
-        }
-
-
-        public void SendAuthMsg()
-        {
-            IsConnected = true;
-            NetDebug.instance.Log("Server Connected", NET_DEBUG_MESSAGE_TYPE.NORMAL);
-
-            AuthProxy authProxy = Facade.RetrieveProxy(AuthProxy.NAME) as AuthProxy;
-            if (TempKey != null && SessionKey == null)
-                authProxy.SendKeyExchangeReq();
-            else
-                authProxy.SendAuthReq();
-        }
-
-        /// <summary>
-        /// 派发协议
-        /// </summary>
-        /// <param name="protoId"></param>
-        /// <param name="buff"></param>
-        public void DispatchProto(uint protoId, byte[] buff)
-        {
-            if (!ProtoDic.ContainProtoId(protoId))
-            {
-                NetDebug.instance.LogError("Unkonw ProtoId, id = " + protoId);
+            if (IsConnected)
                 return;
+            StartConnectServer();
+            Debug.LogWarning("Socket Init: host:" + host + " port: " + port);
+        }
+
+        public void StartConnectServer()
+        {
+            if (thread != null)
+            {
+                thread.Abort();
+                thread = null;
             }
-            Type protoType = ProtoDic.GetProtoTypeByProtoId(protoId);
+            thread = new Thread(new ThreadStart(this.Connect))
+            {
+                IsBackground = true
+            };
+            thread.Start();
+            Debug.LogWarning("InitThread!!!");
+        }
+
+        public bool Check()
+        {
+            if (ReConnectTime <= 0)// || mySocketState == SocketState.connected)
+            {
+                //Debug.LogWarning("Check retry stop event:" + ReConnectTime.ToString() + " socketstate:" + CurrentNetState.ToString());
+                return false;
+            }
+            //Debug.LogWarning("Check retry continue:" + ReConnectTime.ToString());
+            return true;
+        }
+
+        void Connect()
+        {
+            while (!IsConnected)
+            {
+                Debug.LogWarning("Start !!!!!!!!!!!!!!!!!!!!!!" + ReConnectTime);
+                manualEvent.WaitOne();
+                LastConnectTime = TimeUtil.TickToMilliSec(DateTime.Now.Ticks);
+                try
+                {
+
+                    TcpClient tcpClient = new TcpClient();
+                    tcpClient.SendTimeout = 5000;
+                    tcpClient.ReceiveTimeout = 10 * 1000;
+                    tcpClient.NoDelay = true;
+                    tcpClient.BeginConnect(host, port, new AsyncCallback(HandleConnected), tcpClient);
+
+
+                    Debug.LogWarning("BeginConnect to:" + host + ":" + port.ToString());
+
+                    CurrentNetState = NetState.connecting;
+
+                    ReConnectTime--;
+                    Debug.LogWarning("Done !!!!!!!!!!!!!!!!!!!!!!" + ReConnectTime);
+                }
+                catch (Exception e)
+                {
+                    OnError("ConnectServer(): " + e.Message.ToString());
+                }
+                finally
+                {
+                    Thread.Sleep(ThreadSleepTime);
+                }
+            }
+        }
+
+        void ReConnect()
+        {
+            IsConnected = false;
+            Client.Close();
+            Client.TcpClient.BeginConnect(host, port, new AsyncCallback(HandleConnected), Client.TcpClient);
+        }
+
+        private void HandleConnected(IAsyncResult asyncresult)
+        {
+            if (IsConnected)
+                return;
+
             try
             {
-                MessageParser messageParser = ProtoDic.GetMessageParser(protoType.TypeHandle);
-                object toc = messageParser.ParseFrom(buff);
-                sEvents.Enqueue(new KeyValuePair<Type, object>(protoType, toc));
+                TcpClient tcpClient = asyncresult.AsyncState as TcpClient;
+                if (tcpClient == null)
+                {
+                    OnError("Socket Client Error");
+                    return;
+                }
+
+                IsConnected = true;
+                tcpClient.EndConnect(asyncresult);
+
+                byte[] buffer = new byte[MAX_READ];
+                Client = new TCPClientState(tcpClient, buffer);
+
+                Debug.LogWarning("Socket connected to " + tcpClient.Client.RemoteEndPoint.ToString());
+
+                CurrentNetState = NetState.connect_done;
+                ReConnectTime = TRY_TIME;
+
+                Array.Clear(byteBuffer, 0, byteBuffer.Length);
+                Client.NetworkStream.BeginRead(byteBuffer, 0, MAX_READ, new AsyncCallback(HandleDataReceived), Client);
+
+
+                //登录验证
+                if (TempKey != null)
+                {
+                    authProxy.SendKeyExchangeReq();
+                    CurrentNetState = NetState.wait_key;
+                    manualEvent.Set();
+                    SessionKey = null;
+                }
+                else
+                {
+                    Debug.LogWarning("No TempKey send auth");
+                    if(authProxy==null)
+                        authProxy = Facade.RetrieveProxy(AuthProxy.NAME) as AuthProxy;
+
+                    authProxy.Login();
+                }
+
+
+                Debug.LogWarning("ConnectCallback success and StartReceive");
+
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("ConnectCallback Error"+ ex.Message);
+            }
+            finally
+            {
+            }
+        }
+
+
+        /// 数据接受回调函数
+        private void HandleDataReceived(IAsyncResult ar)
+        {
+            Client = (TCPClientState)ar.AsyncState;
+
+            int count = 0;
+            try
+            {
+                count = Client.NetworkStream.EndRead(ar);
             }
             catch
             {
-                NetDebug.instance.LogError("DispatchProto Error:" + protoType.ToString());
+                count = 0;
             }
+
+            if (count == 0)
+            {
+                // connection has been closed
+                lock (Client)
+                {
+                    return;
+                }
+            }
+
+            messageProxy.ReceiveMessage(count);
+            Client.NetworkStream.BeginRead(Client.Buffer, 0, Client.Buffer.Length, HandleDataReceived, Client);
 
         }
 
-        /// <summary>
-        /// 发送SOCKET消息
-        /// </summary>
-        public void SendMessage(IMessage obj)
+
+
+
+
+        void OnError(string msg)
         {
-            if (!ProtoDic.ContainProtoType(obj.GetType()))
-            {
-                NetDebug.instance.LogError("不存协议类型");
-                return;
-            }
-            ByteBuffer buff = new ByteBuffer();
-            uint protoId = ProtoDic.GetProtoIdByProtoType(obj.GetType());
-
-            byte[] result;
-            using (MemoryStream ms = new MemoryStream())
-            {
-                obj.WriteTo(ms);
-                result = ms.ToArray();
-            }
-
-            Int32 lengh = (Int32)(result.Length + 4);
-            //Debug.Log("lengh" + lengh + ",protoId" + protoId);
-            buff.WriteInt((Int32)lengh);
-
-            if (SessionKey != null)
-            {
-                ByteBuffer buffTemp = new ByteBuffer();
-                buffTemp.WriteInt((Int32)protoId);
-                buffTemp.WriteBytes(result);
-                byte[] temp = buffTemp.ToBytes();
-                result = EncryptHelper.AESEncrypt(temp, SessionKey);
-            }
-            else
-            {
-                buff.WriteInt((Int32)protoId);
-            }
-
-            buff.WriteBytes(result);
-            SocketClient.SendMessage(buff);
+            Debug.LogError("SocketClient OnError: " + msg);
         }
+
 
     }
 }

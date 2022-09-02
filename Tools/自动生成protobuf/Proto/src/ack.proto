@@ -1,0 +1,477 @@
+syntax = "proto3";
+package cspb;
+import "struct.proto";
+import "def.proto";
+
+
+/* 命名规范:
+ * 消息名: 驼峰
+ * 字段: 下划线分隔
+ */
+
+
+
+
+// 返回MapViewReq fetch_grids 的信息
+// 为了避免一个march包含在多个grid中, 这里不按照grid发送, 统一发送
+message MapViewAck{
+    repeated Grid   grids       = 2;
+    repeated MarchBrief  marchs = 3;
+}
+
+message MarchAck {
+    int64 march_id  = 1;
+    int32 start_pos = 2;
+    int32 end_pos   = 3;
+}
+
+message GiveupTileAck {
+    int32 pos       = 1;
+    int64 giveup_at = 2;
+}
+
+message UndoGiveupTileAck {
+    int32 pos       = 1;
+}
+
+// 格子详细信息，点击格子时使用
+// 土地分为3层
+// 1.entity 表示建筑实体
+// 2.occupy 表示占领状态
+// 3.战斗状态
+message TileInfoAck {
+    int32   pos                     = 1;
+    // entity
+    ENTITY_TYPE entity_type         = 2;
+    EPCityInfo main_city            = 3;  // 主城
+    EPCityDstInfo p_city_dst        = 4;  // 分城/主城城区
+    EPCityInfo sub_city             = 8;  // 分城
+    EFortressInfo p_fortress        = 9;  // 玩家要塞
+    EFortressInfo n_fortress        = 10; // 野外要塞
+    ENCityInfo npc_city             = 11; // npc城池
+    // occupy
+    OccupyInfo occupy               = 5;
+    
+    // 战斗状态
+    repeated StationInfo stations   = 7; // 临时驻扎的部队,不保证时间顺序
+
+    // NPC 信息
+    NpcInfo npc_info                = 12; // Npc守军恢复时间及守军数量
+
+    int32 state_id                  = 13; // 所属州ID
+    int32 county_id                 = 14; // 所属郡ID
+}
+
+message MarchInfoAck {
+    int64  march_id     = 1;
+    MapPlayerInfo player = 2;
+    //MarchBrief brief     = 3;
+}
+
+message HeroListAck {
+    repeated Hero heros  = 1;
+    int32 kind_exp       = 2;
+}
+
+message NewTroopAck {
+    int64 city_id  = 1;
+    int32 troop_no  = 2;
+    int64 troop_id =3;
+}
+// 对应所有登录/注册响应: CharCreateReq CharLoginReq FastLoginReq ...
+message PlayerInfoAck {
+    int64       player_id       = 1;
+    PlayerInfo  playerInfo      = 2;
+    ERR_CODE    err             = 3;
+}
+
+message PlayerChatAccountAck {
+	int64 player_id = 1;
+	string chat_account = 2;
+	string player_name = 3;
+}
+
+message DelFighterAck{
+}
+
+message Hero2TroopAck {
+}
+
+message SwapFighterAck {
+}
+
+message F2EmptyTroopAck {
+    int64 city_id  = 1;
+    int32 troop_no  = 2;
+    int64 troop_id =3;
+}
+
+message TroopListAck {
+    repeated TroopNtf troops = 1;
+}
+
+//RSkill
+message SkillListAck {
+    repeated Skill skills = 1;
+    int32 skill_exp       = 2;
+}
+
+message ResearchSkillAck {
+}
+
+message LearnSkillAck {
+}
+
+message ForgetSkillAck {
+}
+
+message ResourceAck {
+}
+
+message PlayerLandsAck {
+    repeated TileEntityBrief collects_entity  = 1; // 收藏坐标的实体信息
+}
+
+message DefenderInfoAck {
+    repeated DFighterInfo fighters = 1;
+}
+
+message BReportBasicAck {
+    repeated int64 unread_ids       = 1; // 未读战报Id
+    repeated int64 collections_ids  = 2; // 收藏战报Id
+    repeated int64 report_ids       = 3; // 玩家历史战报Id,按照时间先后顺序 先 -> 后
+    repeated int64 drill_report_ids = 4; // 演武战报
+}
+
+message BReportsAck {
+}
+
+message ReadBReportAck {
+    int64 report_id = 1;
+}
+
+message BReportDetailAck {
+}
+
+message ConscriptAck {
+}
+
+message UndoConscriptAck {
+}
+
+message HeartBeatAck {
+    int64 client_ts = 1;
+    int64 server_ts = 2;
+}
+
+message UpdateNbGuideStepAck {
+    repeated string step = 1;
+}
+
+message FinishNbGuideAck {
+}
+
+message UpdateUnfroceGuideAck {
+    int64 flags = 1;
+}
+
+// message PowerRankAck {
+//     repeated PowerRankItem players  = 1;
+//     // 请求内容，用于并发请求校验
+//     int32 start_place               = 2;
+//     int32 len                       = 3;
+// }
+
+message GmAck {
+    string ret = 1;
+}
+
+// message PowerPlaceAck {
+//     int32  place = 1; // 排名
+//     int32  power = 2; // 势力值
+//     string area  = 3; // 大陆
+// }
+
+message CollectBReportAck {
+    int64 breport_id = 1;
+}
+
+message UndoCollectBReportAck {
+    int64 breport_id = 1;
+}
+
+
+message ReturnTroopAck {
+}
+
+message AllotAsgnAck{
+}
+
+message ResetAsgnAck {
+}
+
+message HeroPromoteAck{
+}
+
+message HeroAwakeAck{
+}
+
+message Heros2SkillExpAck {
+   repeated int64 critHerosRid = 1;
+}
+
+message Hero2SkillAck {
+}
+
+message HeroSkillUpgradeAck {
+}
+
+message LockHeroAck {
+}
+
+message UnLockHeroAck {
+}
+
+// 聊天帐号信息
+message ChatAccountNtf {
+    string account_name     = 1;
+    string password         = 2;
+	string server_url		= 3;
+}
+
+// 聊天频道信息
+message ChatRoomNtf {
+    string room_type        = 1; // open_room | members_only
+    string room_name        = 2;
+	string room_title		= 3;
+    bool   is_join          = 4; // true: 加入聊天室 | false: 退出聊天室
+}
+message SendMailAck  {
+}
+
+message GetMailListAck {
+}
+
+message ReadMailAck {
+}
+
+message GetAttachmentAck {
+}
+
+// 收藏邮件
+message StarMailAck {
+    int64 mail_id = 1; // 被收藏的邮件id
+    int64 star_id = 2; // 收藏后新的邮件id
+}
+
+// 取消收藏
+message UnstarMailAck {
+    repeated int64 mail_ids = 1;
+}
+
+message DeleteMailAck {
+    repeated int64 mail_ids = 1;
+}
+
+message GachaAck {
+    repeated GachaAward awards  = 1; // 抽到的奖励
+    GachaBag gacha_bag          = 2; // 上次抽卡的包
+    GachaBag price_id           = 3; // 上次售价
+    ERR_CODE err                = 4; // 错误信息
+}
+
+message GachaListAck {
+    repeated GachaBag gacha_bags = 1; //卡包集
+}
+
+message TaskListAck {
+    repeated Task tasks = 1;
+}
+
+// 市井
+message MarketsAck{
+    int32   id        = 1; // 商店id
+}
+
+message MarketBuyTimesAck{
+    int32   id        = 1; // 商店id
+}
+
+message MarketBuyItemAck{
+    int32 id         = 1; // 商店id
+    int32 idx        = 2; // 物品index
+}
+
+message FilterPosAck {
+    bool is_found   = 1;      // 是否找到
+    int32 pos       = 2;    // 找到的坐标
+}
+
+message IsNearbyAck {
+    bool is_nearby = 1;
+}
+
+// 一天所有税收记录的返回值（一一对应）
+message GetAllTaxAck{
+   repeated int32 taxValue =1;  // 一天税收值的记录
+   repeated int64 taxTime  =2;  // 一天税收时间的记录
+}
+
+message BuildCityAck {
+    int64 city_id = 1;
+}
+
+// 交易信息返回值
+message GetDealInfoAck {
+    int32 RateLeft   = 1;       // 比例的左边
+    int32 RateRight  = 2;       // 比例的右边
+}
+
+// 头像
+message ChangeAvatarAck {
+    int32 avatar_id = 1; // 头像id
+}
+
+// 简介
+message ChangeIntroAck {
+    string intro = 1;
+}
+
+message MCityListAck {
+    repeated MCityNtf cities            = 1; //主城/分城
+    repeated MFortressNtf fortresses    = 2; //要塞
+}
+
+message ConflictListAck {
+    repeated Conflict conflicts = 1;
+}
+
+message NCityListAck {
+    repeated NpcCityBrief cities = 1;
+}
+
+// 查找联盟
+message FindUnionAck {
+    Union union = 1;
+}
+
+// 设置联盟公告
+message SetUnionDescAck {
+}
+
+// 邀请玩家加入联盟
+message InviteJoinUnionAck {
+}
+
+// 移出联盟玩家
+message RemoveUnionMemberAck {
+    int64 player_id = 1; // 被移出玩家的id
+}
+
+// 解散联盟
+message DissolveUnionAck {
+    PlayerUnion union = 1; // 解散联盟的盟主PUnion
+}
+
+// 拉取已经设置的推送事件类型
+message PushEventListAck {
+    repeated string events = 1;
+}
+
+// 更新推送事件类型
+message UpdatePushEventsAck {
+}
+
+// 玩家演武进度数据
+message DrillAck {
+    int32          current_id   = 1; // 当前关卡ID; 1 ~ 1000 为教学关卡ID; 1001以上为日常关卡ID
+    int32          min_id       = 2; // 可选的最小关卡ID
+    int32          max_id       = 3; // 可选的最大关卡ID
+    repeated int64 heros        = 4; // 攻击部队英雄
+    bool           is_skip      = 5; // 是否跳过动画，仅对日常演武有效
+    int32          attack_count = 6; // 当前挑战次数：即，攻打当前关卡内所有土地的次数和，直到通关为止
+}
+
+// 演武关卡数据
+message DrillIDAck {
+    int32              drill_id       = 1; // 关卡ID
+    repeated int32     occupied_tiles = 2; // 已经占领的土地坐标
+    int64              finish_time    = 3; // 通关时间，0表示当前关卡没通关    
+    int32              expence        = 4; // 攻打关卡费用
+    repeated DrillTile tiles          = 5; // 关卡内土地信息
+}
+
+message DrillSkipAnimationAck {
+    bool is_skip = 1; // 是否跳过演武动画
+}
+
+message DrillStatisticAck {
+    int32                   defeat_count = 1; // 战胜敌方部队次数
+    repeated DrillPassCount pass_count   = 2; // 通关记录
+    repeated int32          npc_troops   = 3; // 敌方部队ID 
+}
+
+// robot task
+message RobotTaskAck{
+    int64               task_id       = 1; //
+    string              name          = 2; //name
+    repeated string     params        = 3; //参数类别
+}
+
+// 返回排行榜
+message LeaderBoardAck{
+    int32                person_count = 1; // 个人榜显示数量
+    int32                union_count  = 2; // 同盟榜显示数量
+    repeated PersonBoard persons      = 3; // 个人榜
+    repeated UnionBoard  unions       = 4; // 同盟榜
+}
+
+//天下大势
+message EpicAwardAck{
+    int32 epic_id   = 1;
+}
+
+message GetEpicInfoAck{
+
+}
+message PNRegisterAck{
+    string  err =1;   //错误 成功 ""
+}
+
+// 请求paytoken
+message PayTokenAck {
+    ERR_CODE err     = 1; // 错误
+    string pay_token = 2; // paytoken
+}
+
+message NpcCityInfoAck {
+    NpcCityInfoNtf infos = 1;
+}
+message QuestionNaireAwardAck{
+}
+
+// 检查名字是否合法
+message ChangeNameCheckAck {
+    string name     = 1; // 名字
+    ERR_CODE errCode = 2;
+}
+
+// 改名
+message ChangeNameAck {
+    string name               = 1; // 新名字
+    ERR_CODE errCode           = 2;
+    int32 freeChangeNameTimes = 3; // 剩余免费改名次数
+}
+
+message QueryPlayersByNameAck {
+    repeated PlayerInfo result = 1;
+}
+
+message QueryPlayerAck {
+    ERR_CODE errCode        = 1;
+    PlayerInfo result       = 2; // 结果
+    string queryName        = 3; // 查询名字
+}
+
+message DismantleCityAck {
+}

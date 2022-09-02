@@ -1,0 +1,778 @@
+syntax = "proto3";
+package cspb;
+import "def.proto";
+import "login.proto";
+import "struct.proto";
+
+/* 命名规范:
+ * 消息名: 驼峰
+ * 字段: 下划线分隔
+ */
+
+
+message MapViewReq{
+    repeated int32 fetch_grids = 1; // 需要获取视野的grid pos
+    repeated int32 ob_grids    = 2; // 需要挂载视野的grid pos
+}
+
+message MarchReq{
+    int64 troop_id              = 1;
+    int32 dest_pos               = 2;
+    TILE_ACTION_TYPE action_type = 3; // 行军到达之后行动类型
+    int32 action_cnt             = 4; // 行军到达之后行动次数
+}
+
+// 放弃占领的格子
+message GiveupTileReq{
+    int32 pos   = 1;
+}
+
+// 取消放弃
+message UndoGiveupTileReq{
+    int32 pos   = 1;
+}
+
+// 请求指定位置的格子信息
+message TileInfoReq {
+    int32 pos   = 1;
+}
+
+// 请求指定行军信息
+message MarchInfoReq {
+    int64 march_id = 1;
+}
+
+// 获取英雄列表
+message HeroListReq {
+}
+
+// 英雄及其阵容位置信息
+message HeroWithPos {
+    int64 hero_rid     = 1;
+    int32  pos          = 2; // x*10000+y 以左上角为(0,0) 二维数组坐标系 x,y>0
+}
+
+// 创建一支部队
+message NewTroopReq {
+    int64 city_id    = 1; // Team所属城池
+    int32 troop_no    = 2; // Team位置 即阵容编号
+    int64 hero_rid   = 3;
+    int32  pos        = 4; // 英雄在队伍中的位置
+}
+
+// 将fighter从部队移除
+message DelFighterReq {
+    int64 troop_id = 1;
+    int64 hero_rid = 2;
+}
+
+// 交换在队伍中的英雄
+//// 将hero_rid的fighter与troop_id的index位置的fighter交换
+//// troop_id的index位置的fighter可以不存在
+message SwapFighterReq {
+    int64 troop_id = 1;
+    int64 hero_rid = 2;
+    int32  pos      = 3;
+}
+
+// 移动fighter到一个没有队伍的位置
+message F2EmptyTroopReq {
+    int64 city_id  = 1;
+    int32 troop_no  = 2;
+    int64 hero_rid = 3;
+    int32  pos      = 4;
+}
+
+// 新加一个hero到troop, 会删除原来位置的fighter
+message Hero2TroopReq {
+    int64 troop_id    = 1;
+    int64 hero_rid    = 2;
+    int32  pos         = 3; //英雄在战场站位
+}
+
+// 拉取所有部队详细信息
+message TroopListReq {
+}
+
+//获得技能列表
+message SkillListReq {
+}
+
+//研究技能
+message ResearchSkillReq {
+    repeated int64 hero_rids = 1; // 消耗的英雄
+    int32 skill_id            = 2; // 需要研究的技能
+}
+
+//学习技能
+message LearnSkillReq {
+    int64 hero_rid         = 1;
+    int32 skill_id          = 2;
+    int32 index             = 3; // 英雄技能位置
+}
+
+//遗忘技能
+message ForgetSkillReq {
+    int64 hero_rid         = 1;
+    int32 index             = 2;
+}
+
+message ResourceReq {
+}
+
+// 请求玩家土地信息, 占领土地, 收藏的土地
+message PlayerLandsReq {
+}
+
+message DefenderInfoReq {
+    int32 pos = 1;
+}
+
+// 战报
+message BReportsReq {
+    repeated int64 report_ids  = 1; //上限50个, 超过截取前50个
+}
+
+message BReportBasicReq {
+}
+
+message ReadBReportReq {
+    int64 report_id = 1;
+}
+
+message BReportDetailReq {
+    int64 report_id = 1;
+}
+
+// 英雄征兵
+message FighterWithConscript {
+    int64 fighter_rid = 1;
+    int32 normal    = 2; // 普通征兵数量, 会消耗时间
+    int32 redif     = 3; // 预备兵征兵数量, 会消耗预备兵
+}
+
+message ConscriptReq {
+    int64 troop_id                          = 1;
+    repeated FighterWithConscript fighters  = 2;
+}
+
+message UndoConscriptReq {
+    int64 troop_id          = 1;
+    repeated int64 fighters = 2;
+}
+
+message FighterWithCnt {
+    int64 fighter_rid   = 1;
+    int32 cnt           = 2;
+}
+
+// 预备兵加速征兵
+message RedifSpeedUpConscriptReq {
+    int64 troop_id                   = 1;
+    repeated FighterWithCnt fighters = 2;
+}
+
+// 城建升级
+message UpgradeBuildReq {
+    int64 city_id   = 1;
+    int32 build_id  = 2;
+}
+
+// 城建立刻升级
+message UpgradeBuildAtOnceReq {
+    int64 city_id  = 1;
+    int32 build_id  = 2;
+}
+
+// 取消城建升级
+message CancelUpgradeBuildReq {
+    int64 city_id  = 1;
+    int32 build_id  = 2;
+}
+
+// 心跳包
+message HeartBeatReq {
+    int64   client_ts   = 1;
+}
+
+// 更新新手引导步骤
+message UpdateNbGuideStepReq {
+    repeated string step = 1;
+}
+
+// 结束新手引导
+message FinishNbGuideReq {
+}
+
+
+// 更新弱引导步骤
+message UpdateUnfroceGuideReq {
+    int64 flags = 1;
+}
+// 拉取玩家势力值排行榜指定的区间
+// message PowerRankReq {
+//     int32 start_place = 1; // 开始排名,排名从1开始
+//     int32 len         = 2; // 长度,最大300
+// }
+
+// Gm
+message GmReq {
+    repeated string args = 1;
+}
+
+// 玩家排名请求
+// message PowerPlaceReq {
+// }
+
+// 收藏战报，上限30
+message CollectBReportReq {
+    int64  target_player_id     = 1;
+    int64 breport_id   = 2;
+}
+
+message UndoCollectBReportReq {
+    int64 breport_id   = 1;
+}
+
+// 部队撤退
+message ReturnTroopReq {
+    int64 troop_id   = 1;
+    TROOP_STATE state = 2; // 避免网络延迟撤回错误的状态
+}
+
+//英雄升阶
+message HeroPromoteReq {
+    int64 promote_hero_rid           = 1; // 进阶的英雄
+    repeated int64 consume_hero_rids = 2; // 消耗的英雄
+}
+
+//英雄觉醒
+message HeroAwakeReq {
+    int64 awake_hero_rid             = 1; // 觉醒的英雄
+    repeated int64 consume_hero_rids = 2; // 消耗的英雄
+}
+
+// 英雄加点
+message AllotAsgnReq {
+    int64 hero_rid = 1;
+    // 分配在下列属性的点数（未分配为0）
+    int32  atk   = 2; // 攻击
+    int32  pdef  = 3; // 物理防御
+    int32  inte  = 4; // 法术防御
+    int32  speed = 5; // 速度
+}
+
+// 重置英雄加点
+message ResetAsgnReq {
+   int64 hero_rid = 1;
+   bool is_free    = 2; // 客户端判断是否是免费, 用于与服务器验证
+}
+
+// 英雄转化为战法经验
+message Heros2SkillExpReq {
+    repeated int64 hero_rids = 1; // 消耗的英雄
+    bool is_diamond           = 2; // 消耗钻石
+}
+
+// 技能升级
+message HeroSkillUpgradeReq {
+    int64 hero_rid = 1;
+    int32 skill_id  = 2;
+    int32 cur_lv  = 3; // 技能当前等级, 避免网络延迟导致的数据不一致
+}
+
+// 英雄锁定
+message LockHeroReq {
+   int64 hero_rid = 1;
+}
+
+// 英雄锁定
+message UnLockHeroReq {
+   int64 hero_rid = 1;
+}
+
+// 收税
+message CollectTaxesReq {
+}
+
+// 交易资源请求
+message TransResReq {
+    int32 src  = 1; // 用资源id表示
+    int32 dest = 2; // 用资源id表示
+    int32 cnt  = 3; // src的数量
+}
+
+// 发送邮件
+message SendMailReq  {
+    repeated MailAddr receivers = 1;
+    string title = 2;
+    string content = 3;
+}
+
+// 拉取邮件列表
+message GetMailListReq {
+    int32 box_id     = 1; // 邮箱id
+    int64 start_id   = 2; // 邮件起始id
+    bool asc         = 3; // true为升序
+}
+
+// 阅读邮件
+message ReadMailReq {
+    repeated int64 mail_ids = 1;
+    bool get_attachment = 2;
+}
+
+// 领取附件奖励
+message GetAttachmentReq {
+    repeated int64 mail_ids = 1;
+}
+
+// 收藏邮件
+message StarMailReq {
+    int64 mail_id = 1;
+}
+
+// 取消收藏
+message UnstarMailReq {
+    repeated int64 mail_ids = 1;
+}
+
+// 批量删除邮件 -- 废弃
+message DeleteMailReq  {
+    repeated int64 mail_ids = 1;
+}
+
+// 发送聊天消息
+message ChatReq  {
+    int32 channel = 1;
+    string content = 2;
+}
+
+// 拉取消息记录
+message ChatListReq {
+}
+
+// 收藏土地, 上限10
+message CollectLandReq {
+    int32 pos = 1;
+}
+
+message UndoCollectLandReq {
+    int32 pos = 1;
+}
+
+// gacha
+message GachaReq {
+    int64 package_id    = 1; // 抽奖池
+    int32 price_id      = 2; // 价格
+    int32 cnt           = 3; // 次数
+}
+
+message GachaListReq {
+}
+
+// 返回中的部队立刻到达
+message TroopArrivedAtOnceReq {
+    int64 troop_id   = 1;
+}
+
+message GetTaskAwardReq{
+    int32 task_id = 1;
+}
+
+message TaskListReq{
+}
+
+// 税收
+message TaxReq{
+}
+
+// 市井 获取市井
+message MarketsReq{
+    int32 id              = 1; // 商店id
+    int64 refresh_time    = 2; // 上次商品更新时间(毫秒级时间戳)
+}
+
+// 市井 刷新市井
+message MarketBuyTimesReq{
+    int32 id              = 1; // 商店id
+    int64 refresh_time    = 2; // 上次商品更新时间(毫秒级时间戳)
+}
+
+// 市井 购买商品
+message MarketBuyItemReq{
+    int32 id              = 1; // 商店id
+    int32 idx             = 2; // 物品index
+    int64 refresh_time    = 3; // 上次商品更新时间(毫秒级时间戳)
+}
+
+message UpGuardianHeroReq{
+    int64 city_id = 1;
+    int64 hero_rid = 2;
+    int32 pos = 3;
+}
+
+message DownGuardianHeroReq{
+    int64 city_id = 1;
+    int64 hero_rid = 2;
+}
+
+message SwapGuardianHeroReq{
+    int64 city_id = 1;
+    int32 src_pos = 2;
+    int32 dst_pos = 3;
+}
+
+
+// 修建新的建筑物
+message BuildCityReq {
+    CITY_TYPE  city_type = 1;
+    string city_name = 2;
+    int32 city_pos = 3;
+}
+
+// 拆除建筑
+message DismantleCityReq {
+    CITY_TYPE  city_type = 1;
+    int64 city_id       = 2;
+}
+
+// 对话任务（分支选择）任务
+message TaskActiveReq {
+    int32 taskId = 1; // 要激活的任务数组 中的首个event id
+}
+
+// 以一个土地为中心筛选一块土地
+message FilterPosReq {
+    int32 center           = 1; // 中心
+    int32 radius           = 2; // 半径, 不超过10
+    int32 occupy_state     = 3; // 占领情况, 0: 无主, 1:自己的, 2:别人的
+    int32 land_lv          = 4; // 土地等级, 0: 不关心等级, 1-99: 指定等级, 100: 最高等级
+}
+
+// 判断是否有自己相邻的地
+message IsNearbyReq {
+    int32 pos = 1;
+}
+
+message VisionViewReq {
+    repeated int32 fetch_grids  = 1; // 需要获取视野的grid pos
+    repeated int32 ob_grids     = 2; // 需要挂载视野的grid pos
+}
+
+// 强制收税
+message ForceCollectTaxesReq{
+}
+
+// 获取所有税收记录
+message GetAllTaxReq{
+}
+
+// 获取交易信息
+message GetDealInfoReq{
+}
+
+// 修改头像
+message ChangeAvatarReq {
+    int32 avatar_id = 1; // 头像id
+}
+
+// 修改简介
+message ChangeIntroReq {
+    string intro = 1; // 简介
+}
+
+// 土地
+message LandsBasicReq {
+}
+
+// 查找联盟
+message FindUnionReq {
+    string name      = 1; // 联盟名字
+}
+
+// 获得联盟信息列表
+message GetUnionInfoListReq {
+}
+
+// 创建联盟
+message CreateUnionReq {
+    string name      = 1; // 联盟名字
+    string nick_name = 2; // 联盟简称
+    string desc      = 3; // 联盟公告
+    UnionFlag flag   = 4; // 联盟旗帜
+}
+
+// 申请加入联盟
+message ApplyUnionReq {
+    int64 union_id = 1;
+}
+
+message ApplyUnionByNameReq {
+    string name = 1;
+}
+
+// 直接加入联盟
+message JoinUnionReq {
+    int64 union_id = 1;
+}
+
+message JoinUnionByNameReq {
+    string name = 1;
+}
+
+// 取消申请
+message CancelApplyUnionReq {
+    int64 union_id = 1;
+}
+
+// 联盟主界面信息
+message GetUnionInfoReq {
+}
+
+// 解散联盟
+message DissolveUnionReq {
+}
+
+// 禅让盟主
+message DemiseUnionLeaderReq {
+    int64 target_player_id = 1;  // 禅让给的成员的id
+}
+
+// 取消禅让
+message CancelDemiseReq {
+}
+
+// 审批是否同意申请加入联盟
+message ApproveApplyUnionReq {
+    int64 apply_player_id = 1;  // 申请玩家的id
+    bool is_agree   = 2;  // 是否同意申请
+}
+
+// 移除联盟成员
+message RemoveUnionMemberReq {
+    int64 target_player_id = 1;  // 移除成员的id
+}
+
+// 任命联盟成员职位
+message AppointUnionMemberTitleReq {
+    int64 target_player_id = 1;  // 被任命成员的id
+    int32 title_id  = 2;  // 职位id
+}
+
+// 放弃联盟职位
+message GiveupUnionTitleReq {
+}
+
+// 退出联盟
+message QuitUnionReq {
+}
+
+// 邀请加入联盟
+message InviteJoinUnionReq {
+    int64 Invite_player_id = 1;  // 被邀请玩家的id
+}
+
+message InviteJoinUnionByNameReq {
+    string player_name = 1; // 被邀请玩家的name
+}
+
+// 处理联盟邀请
+message DealUnionInviteReq {
+    int64 union_id = 1;
+    bool is_agree  = 2;   // 是否接受邀请
+}
+
+// 设置联盟加入条件
+message SetUnionJoinLimitReq {
+    int32 limit_type = 1; // 条件类型
+}
+
+// 设置联盟公告
+message SetUnionDescReq {
+    string desc = 1;      // 联盟公告
+}
+
+// 联盟捐赠
+message DonateToUnionReq {
+    repeated Item resources = 1; // 贡献的资源
+}
+
+// 设置联盟外交关系
+message SetUnionRelationReq {
+    int64 union_id = 1;   // 目标联盟id
+    int32 relation = 2;   // 关系，对应UNION_RELATION_TYPE
+}
+
+// 设置联盟标记
+message AddUnionMarkReq {
+    int32  pos     = 1;   // 标记位置
+    string name    = 2;   // 标记名
+    string content = 3;   // 标记内容
+}
+
+// 取消联盟标记
+message DelUnionMarkReq {
+    int32  pos     = 1;   // 标记位置
+}
+
+// 交换两个联盟官员的职位
+message SwapUnionTitleReq {
+    int64 src_player_id = 1;  // 成员A的id
+    int64 target_player_id = 2;  // 成员B的id
+}
+
+// 请求玩家所有城池的部队信息, 包括要塞
+message MCityListReq {
+}
+
+// 请求城池的城建信息
+message PCityReq {
+    int64 city_id = 1;
+}
+
+// 沦陷玩家向上级同盟上缴反叛资源
+message FallenPayRevoltResReq {
+    repeated Item resources = 1; // 上缴的资源
+}
+
+message TestUnionReq {
+}
+
+// 拉取战役列表
+message ConflictListReq {
+}
+
+// 拉取所有npc城池的简要信息
+message NCityListReq {
+}
+
+// 拉取已经设置的推送事件类型
+message PushEventListReq {
+}
+
+// 更新推送事件类型
+message UpdatePushEventsReq {
+    repeated string events = 1;
+}
+
+// 查看玩家信息
+message PlayerInfoReq {
+    int64 target_player_id = 1;
+}
+
+// 请求指定玩家的聊天账号
+message PlayerChatAccountReq {
+	int64 target_player_id = 1;
+}
+
+// 请求当前演武进度
+message DrillReq {    
+}
+
+// 请求演武关卡数据
+// 如果关卡没有开启，尝试开启关卡；开启成功，发送关卡数据; 不成功，发送错误信息
+message DrillIDReq {
+    int32 drill_id = 1;
+    bool  is_reset = 2; // 仅对日常关卡有效，true 表示放弃当前关卡，重新打开新关卡；false 不操作
+}
+
+// 攻击关卡土地
+message DrillAttackTileReq {
+    int32          drill_id = 1; // 关卡ID
+    int32          tile_pos = 2; // 攻击的土地坐标
+    repeated int64 heros    = 3; // 英雄排序[大营, 中军, 前锋]
+}
+
+// 跳过（或取消跳过）演武动画操作
+message DrillSkipAnimationReq {
+    bool is_skip = 1; // 是否跳过演武动画
+}
+
+// 日常演武统计数据
+message DrillStatisticReq {
+}
+
+message MoveMainCityReq {
+    int64         city_id   = 1;
+    int32         dest_pos  = 2;
+}
+
+message CityInvincibleReq {
+}
+
+// 英雄拆技能
+message Hero2SkillReq {
+    int64 hero_rid  = 1; // 消耗的英雄
+    int32 skill_id  = 2; // 要拆的技能id
+}
+
+// robot task
+message RobotTaskReq{
+}
+
+// robot task
+message RobotTaskFinshReq{
+    int64  taskId = 1;
+}
+
+// 请求排行榜
+message LeaderBoardReq {
+
+}
+
+//天下大势
+message EpicAwardReq{
+    int32 epic_id   = 1;
+}
+
+message GetEpicInfoReq{
+
+}
+
+// 登录任务
+message TaskEventAwardReq{
+    int32 task_id   = 1;
+}
+
+message PNRegisterReq{
+    string push_type        = 1; // apns , gcm, fcm
+    string push_token       = 2; // Apple Device Token或Android GCM Registration ID
+}
+
+// 请求paytoken
+message PayTokenReq {
+    // nothing
+}
+
+// 检查名字是否合法
+message ChangeNameCheckReq {
+    string name = 1; // 名字
+}
+
+message ChangeNameReq {
+    string name = 1; // 新名字
+}
+// npc城占领情况
+message NpcCityOccupyReq{
+}
+
+// 问卷调查奖励
+message QuestionNaireAwardReq{
+    int32 fin_type      = 1;
+    int32 task_id       = 2;
+}
+
+// QueryPlayerByNameReq 玩家名字查询, 前缀匹配
+message QueryPlayersByNameReq {
+    string name = 1;
+}
+
+// QueryPlayerReq 玩家名字查询, 唯一匹配
+message QueryPlayerReq {
+    string name = 1;
+}
+
+message LoginEventAwardReq {
+
+}

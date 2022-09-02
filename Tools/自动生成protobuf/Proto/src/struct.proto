@@ -1,0 +1,1045 @@
+syntax = "proto3";
+package cspb;
+import "def.proto";
+
+/* 命名规范:
+ * 消息名: 驼峰，首字母大写
+ * 字段:  全小写，下划线分隔
+ * 枚举:  驼峰
+ */
+
+/*  约定:
+ *      1. 如无特殊说明，协议中的时间戳单位均为ms(int64)
+ *      2. 大地图坐标Pos用int32表示，转换公式为 Pos = x*10000+y
+ *      3. 除特殊说明 xxxListNtf全局更新, xxxsNtf局部更新
+ *      4. 一般来说, ntf在玩家数据改变后都会主动同步给客户端
+ */
+
+// 大地图格子上的各类实体简要信息
+// 主城/分城
+message EPCityBrief {
+    int64 player_id         = 1; // 主城所属玩家
+    string city_name        = 2;
+    CITY_STATE state        = 3; // 城池状态
+    bool isInvincible       = 4; // 坚守状态
+}
+
+message EPCityInfo {
+    MapPlayerInfo owner = 1;
+    string city_name    = 2;
+    CITY_STATE state    = 3;
+}
+
+// 主城/分城城区
+message EPCityDstBrief {
+    int64 player_id         = 1;
+    int32 center            = 2; // 中心点位置
+    string city_name        = 3; // 城池名字
+    bool isInvincible       = 4; // 坚守状态
+}
+
+message EPCityDstInfo {
+    MapPlayerInfo owner = 1;
+    string city_name    = 2; // 城池名字
+    int32 center        = 3; // 中心点位置
+}
+
+// 要塞
+message EFortressBrief {
+    int64 player_id  = 1;  // 分城城所属玩家
+    string city_name = 2;
+    CITY_STATE state = 3;  // 城池状态
+    bool isInvincible       = 4; // 坚守状态
+}
+
+message EFortressInfo {
+    MapPlayerInfo owner = 1;
+    string city_name    = 2;
+    CITY_STATE state    = 3;
+}
+
+// npc城池
+message ENCityBrief {
+}
+
+message ENCityInfo {
+}
+
+message MapPlayerInfo {
+    int64     id         = 1;
+    string    name       = 2;
+    int32     power      = 3;  // 势力值
+    string    intro      = 4;  // 个人描述
+    int32     presitge   = 5;  // 名望值
+    string    union_name = 6;  // 联盟名字
+    string    nick_name  = 7;  // 联盟简称
+    int32     avatar_id  = 8;  // 个人头像id
+    UnionFlag union_flag = 9;  // 联盟旗帜
+    int64     union_id   = 10; // 联盟ID
+}
+
+// 临时驻扎信息（部队移动到土地发生某些行为）
+message StationBrief {
+    TILE_ACTION_TYPE action_type = 1; // 行动类型
+    int32            count       = 2;
+}
+
+message StationInfo {
+    MapPlayerInfo player         = 1;
+    int64 troop_id              = 2;
+    TILE_ACTION_TYPE action_type = 3; // 行动类型
+    int64 arived_at              = 4; // 部队到达时间
+}
+
+message NpcInfo {
+    int64 battle_start       = 1; // npc触战时间
+    int32 left_troop_count   = 2; // 剩余npc队伍数量, -1 表示不需要显示剩余npc队伍数量
+}
+
+// 占领信息
+message OccupyBrief {
+    int64 owner_id                  = 1; // 占领者ID
+    int64 giveup_at                 = 2; // 放弃土地结束时间
+    int64 protect_until             = 3; // 免战期结束时间
+    int64 union_id                  = 4; // 占领者联盟id
+    int64 fallen_by                 = 5; // 被沦陷的联盟Id
+}
+
+message OccupyInfo {
+    MapPlayerInfo owner             = 1; // 占领者
+    string union_owner_name         = 2; // 占领工会
+    int32 owner_type                = 3; // 占领类型
+    int64 protect_until             = 4; // 免战期结束时间
+    int32 cur_durable               = 5; // 当前耐久度
+    int32 max_durable               = 6; // 最大耐久度
+    int64 giveup_at                 = 7; // 放弃土地结束时间
+    int64 refresh_at                = 8; // 耐久度上一次刷新时间
+
+    int64 union_id                  = 20; // 占领者联盟id   AI
+    int64 fallen_by                 = 21; // 被沦陷的联盟Id AI
+}
+
+message TroopBrief {
+    int64 player_id = 1; // 玩家ID
+    int64 union_id  = 2; // 联盟ID
+    int64 troop_id  = 3; // 队伍ID
+}
+
+// 格子简要信息，拖动大地图时使用
+// 1. 地形信息, 无需发送
+// 2. 实体简要信息
+// 3. 实体占领信息
+message TileBrief {
+    int32                 pos         = 1; // 土地坐标
+
+    ENTITY_TYPE           entity_type = 2;  // 实体类型
+    EPCityBrief           main_city   = 3;  // 主城
+    EPCityDstBrief        p_city_dst  = 4;  // 主城/分城城区
+    EPCityBrief           sub_city    = 8;  // 分城
+    EFortressBrief        p_fortress  = 9;  // 玩家要塞
+    EFortressBrief        n_fortress  = 10; // 野外要塞
+    ENCityBrief           npc_city    = 11; // npc城池
+    ENCityBrief           npc_gate    = 12; // npc关卡
+
+    OccupyBrief           occupy      = 5;  // 占领 
+    repeated StationBrief stations    = 7;  // 土地状态信息，包括守军数量，平局数量等
+    repeated TroopBrief   draw_troops = 13; // 所有打平队伍
+}
+
+// 只打包tile的实体信息
+message TileEntityBrief {
+    int32 pos                       = 1;
+    ENTITY_TYPE entity_type         = 2;  // 实体类型
+    EPCityBrief main_city           = 3;  // 主城
+    EPCityDstBrief p_city_dst       = 4;  // 主城/分城城区
+    EPCityBrief sub_city            = 5;  // 分城
+    EFortressBrief p_fortress       = 6;  // 玩家要塞
+    EFortressBrief n_fortress       = 7;  // 野外要塞
+    ENCityBrief npc_city            = 8;  // npc城池
+    ENCityBrief npc_gate            = 9;  // npc关卡
+}
+
+// 行军简略信息，拖动大地图时使用
+message MarchBrief {
+    int64   march_id            = 1;
+    int64   troop_id            = 2;
+    int32   start_pos           = 3;
+    int32   end_pos             = 4;
+    int64   start_time          = 5;
+    int64   arrive_time         = 6;
+    bool    is_return           = 7;
+    int64   detail_report_id    = 8; // 战斗后的回放id, 只有攻击无主土地胜利/失败之后才会存在
+    int64   player_id           = 9; // player id
+    int64   union_id            = 10; // union id
+}
+
+// 大地图Grid信息 包括静态信息(如tiles)
+message Grid {
+    repeated TileBrief   tiles  = 1;
+    int32 pos                   = 3;
+}
+
+// 玩家城池信息
+message CityBuild {
+    int64 end_t     =1; // 升级结束时间
+    int32 Level     =2; // 等级
+}
+
+// 玩家所有的城池的城建
+message PCityNtf {
+    int64       id                   = 1;
+    int32       pos                  = 2;  // 城池在大地图中的位置
+    CITY_TYPE   city_type            = 3;  // 城池类型
+    map<int32, CityBuild> builds     = 4;  // 城建
+    repeated int32 build_queue       = 5;  // 普通建筑队列
+    repeated int32 temp_build_queue  = 6;  // 临时建筑队列
+    int32       queue_max            = 7;  // 最大建造队列数量
+}
+
+// 主城/分城部队
+message MCityNtf {
+    int64       id                 = 1;
+    map<int32, int64> troops       = 2;  // 城池中的部队 部队编号 -> 部队ID
+    repeated int64 conscript_queue = 4;  // 征兵队列, 保存正在征兵的troop_id
+    int32 redif                     = 6;  // 预备兵
+    map<string, float> buff_attrs   = 7;  // 所有Buff属性
+    CITY_STATE  state               = 8;  // 城池状态
+    CITY_TYPE city_type             = 9;  // 城池类型: 主城/分城
+    int32 pos                       = 10; // 城池位置
+    string name                     = 11; // 城池名字
+    int64 state_end_at              = 12; // 城池状态切换结束时间(修建完成时间/拆除完成时间等)
+}
+
+
+// 要塞调动部队/征兵
+message MFortressNtf {
+    int64       id                 = 1;
+    repeated int64 troops          = 2;  // 城池中的部队
+    repeated int64 conscript_queue = 4;  // 征兵队列, 保存正在征兵的troop_id
+    int32 redif                     = 5;  // 预备兵
+    CITY_STATE  state               = 6;  // 城池状态
+    map<string, float> buff_attrs   = 7;  // 所有Buff属性
+    CITY_TYPE city_type             = 8;  // 城池类型: 要塞, 野外要塞, 军营
+    int32 pos                       = 9;  // 要塞位置
+    string name                     = 10; // 城池名字
+    int64 state_end_at              = 11; // 城池状态切换结束时间(修建完成时间/拆除完成时间等)
+}
+
+// 玩家城池删除ntf
+message DelCityNtf {
+    int64 city_id      = 1;
+    CITY_TYPE city_type = 2;
+}
+
+// 玩家基本信息
+message BasicNtf {
+    int64 player_id             = 1;
+    string name                 = 2;
+    bool finish_guide           = 4;  // 新手引导是否结束
+    repeated string newbie_step = 5;  // 新手引导步骤
+    int32 avatar_id             = 6;  // 个人头像
+    string intro                = 7;  // 个人简介
+    int32 main_city_pos         = 8;  // 主城位置
+    PlayerUnion union           = 9;  // 联盟信息
+    FallenInfo fallen           = 10; // 沦陷信息
+    int64 create_at             = 12; // 角色创建时间
+    int64 unfroce_Guide         = 13; // 弱引导
+}
+
+// 玩家信息（用于其他玩家查看）
+message PlayerInfo {
+    int64   player_id             = 1;
+    int32   avatar_id             = 2; // 头像id
+    string  name                  = 3; // 玩家名字
+    string  intro                 = 4; // 个人简介
+    int32   power                 = 5; // 势力值
+    int32   presitge              = 6; // 名望值
+    string  union_name            = 7; // 联盟名字
+    string  union_nick_name       = 8; // 联盟昵称
+    string  fallen_by_name        = 9; // 上级联盟名
+    string  fallen_by_nick_name   = 10; // 上级联盟昵称
+    UnionFlag union_flag          = 11; // 联盟旗帜
+}
+
+message HeroSkill {
+    int32 id   = 1;
+    int32 lv   = 2;
+    int32 idx  = 3;
+}
+
+message HeroAttr {
+    // 手动分配属性(通过升级 进阶)
+    int32 atk_asgn   = 1;
+    int32 pdef_asgn  = 2;
+    int32 mdef_asgn  = 3;
+    int32 speed_asgn = 4;
+}
+
+message HeroEnergy {
+    int32 energy    = 1; //体力
+    int64 last_t    = 2; //上次更新体力时间
+}
+
+message HeroState {
+    int64 hurt_t    = 1; //重伤状态到期时间
+}
+
+//英雄信息
+message Hero {
+    int64 hero_rid             = 1;
+    int32 hero_id               = 2;
+    int32 level                 = 3;
+    int32 adv_star              = 4;  // 进阶次数
+    HeroAttr attr               = 5;
+    repeated HeroSkill skills   = 6;
+    HeroEnergy energy           = 7;
+    HeroState state             = 8;
+    int32 exp                   = 9;  // 当前经验值(升级所需经验值从配置表读)
+    bool awake                  = 10; // 觉醒
+    bool is_lock                = 11; // 是否锁定
+    int64 reset_at              = 12; // 上一次重置加点时间
+    int64 troop_id             = 13; // 英雄在部队时的部队id
+}
+
+//增加，更新单个或多个Hero
+message HerosNtf {
+    repeated Hero heros = 1 ;
+}
+
+// 在玩家OB内，有行军信息的添加或修改
+message MarchsNtf {
+    repeated MarchBrief marchs   = 1;
+}
+
+// 在玩家OB内，有行军信息删除
+message DelMarchNtf{
+    repeated int64 march_ids = 1;
+}
+
+// 在玩家OB内，Tile信息变动
+message TilesNtf {
+    repeated TileBrief tiles = 1;
+}
+
+message KickoutNtf {
+    enum Reason{
+        Other_Login = 0;
+    }
+    Reason reason = 1;
+}
+
+message DelHerosNtf {
+    repeated int64 hero_rids  =  1;
+}
+
+message FEnergy {
+    int32 energy    = 1; //体力
+    int64 last_t    = 2; //上次更新体力时间
+}
+
+message FState {
+    int64 hurt_t      = 1; //重伤状态结束时间
+}
+
+message FConscript {
+    int64 end_t = 1;
+    int32 cnt   = 2;
+}
+
+// 队伍里面的fighter
+message Fighter {
+    int64  hero_rid     = 1;
+    int32   cur_hp       = 2;    // 当前兵力
+    int32   pos          = 3;    // 成员在部队中的位置
+    FEnergy energy       = 4;    // 体力, 字段不为nil
+    FState state         = 5;    // 状态, 字段不为nil
+    FConscript conscript = 6;    // 征兵情况, 字段可能为nil
+    int32  hero_id       = 7;    // hreo_id
+}
+
+// 描述部队在土地上面的行动, 可以进行多次相同种类的行动
+message TileAction {
+    TILE_ACTION_TYPE action_type    = 1;
+    int32 start_pos                 = 2;
+    int32 dest_pos                  = 3;
+    int64 cur_action_finish_at      = 4; // 部队当前行动结束时间(这一次, 不是所有行动), 平局结束时间
+    int32 max_action_cnt            = 5; // 部队最大行动次数
+    int32 sur_action_cnt            = 6; // 部队当前剩余行动次数, 本次行动次数是剩余次数+1
+    int64 start_at                  = 7; // 部队出发时间, 不是行动开始时间
+    int64 march_id                 = 8; // 行军的march_id
+}
+
+message TroopNtf {
+    int64 troop_id           = 1;  // 部队唯一ID
+    repeated Fighter fighters = 2;  // 部队成员
+    TROOP_STATE state         = 3;  // 部队状态
+    TileAction action         = 7;  // 部队行动时的信息
+    int32 local_city_pos      = 9;  // 部队目前所在城池位置
+    int32 belong_city_pos     = 10; // 部队所属城池位置
+}
+
+message DelTroopNtf {
+    int64 troop_id = 1;  // 部队唯一ID
+}
+
+//技能
+message Skill {
+    int32 skill_id          = 1;
+    int32 rprogress         = 2;//研究进度(可能大于100,为了以后技能进阶保留)
+    repeated int64 heros   = 3;//已学英雄
+}
+
+// 技能部分更新
+message SkillsNtf {
+    repeated Skill skills  = 1;
+}
+
+// 战法经验
+message SkillExpNtf {
+    int32 skill_exp = 1;
+}
+
+// 战报里面的fighter
+message BRFighterBrief {
+    int32            hero_id  = 1;  // 英雄ID
+    int32            pos      = 2;  // 战场站位: 1 大营， 2 中军， 3 前锋
+    int32            lv       = 3;  // 战前英雄等级
+    int32            cur_hp   = 4;  // 离开战斗后的血量
+    int32            max_hp   = 5;  // 进入战斗前的血量
+    int64            hero_rid = 6;  // 英雄RID, 因为战报是持久性的, 因此英雄的状态不要根据hero_rid索引的英雄判断
+    int32            adv_star = 7;  // 进阶次数
+    bool             awake    = 8;  // 是否觉醒
+    repeated BRSkill skills   = 9;  // 英雄所带技能    
+    int32            exp      = 10; // 战前英雄经验值
+    HERO_ARM_TYPE    arm_type = 11; // 兵种
+}
+
+message BRTroopBrief {
+    string                  player_name = 1;
+    repeated BRFighterBrief fighters    = 2;
+    bool                    is_npc      = 3; // 是否是npc ps:玩家也可能由npc部队    
+    string                  union_name  = 4; 
+    int32                   npc_troop   = 5; // npc troop id
+}
+
+//给客户端的简要战报
+message BReportNtf {
+    int64 report_id          = 1;
+    int32 pos                = 2;
+    bool is_attacker         = 3;
+    BATTLE_RESULT result     = 4;
+    BRTroopBrief attacker    = 5;
+    BRTroopBrief defender    = 6;
+    int64 time               = 7;
+    int64 battle_id          = 8;  // 战斗编号，用于客户端合并连续战斗
+    bool is_occupy           = 9;  // atk是否占领土地
+    int64 detail_report_id   = 10; // 回放战报ID
+    ENTITY_TYPE dst_type     = 11; // 用于显示简要的目的地属性
+    int32 exp_get            = 12; // 单个英雄获得经验
+    repeated Item awards     = 13; // 资源奖励
+    repeated Item supply     = 14; // 战败补偿
+    int32 sub_durable        = 15; // 拆除的耐久度
+    int32 left_durable       = 16; // 剩余耐久度
+    int32 uexp_get           = 17; // 同盟获得经验
+    bool has_new_enemy       = 18; // 遭遇新敌军
+}
+
+// 玩家拥有全部土地pos
+message Land {
+    int32 pos           = 1; // 坐标
+    ENTITY_TYPE e_type  = 2; // 土地类型
+}
+
+message LandListNtf {
+   repeated Land lands = 1;
+}
+
+//Resource
+message Resource {
+    RESOURCE_ID id      = 1; // id
+    int32  res          = 2; // 目前的资源情况
+    int32  produce      = 3; // 产量, 每小时产量
+    int32 max           = 4; // 资源上限
+    int64 refresh_at    = 5;// 上次资源更新时间
+}
+
+message ResourceNtf {
+    repeated Resource resources = 2; // 资源: 木材, 石料, 铁块, 粮草, 名望, 政令
+    int32   diamond             = 3; // 钻石
+    int32   coin                = 5; // 钱币
+
+}
+
+message DSkillInfo {
+    int32 id = 1;
+    int32 lv = 2;
+}
+
+// 守军信息里面的fighter
+message DFighterInfo {
+    int32 hero_id  = 1; // Fighter英雄ID
+    int32 pos      = 2; // Fighter在战场站位
+    int32 cur_hp   = 3;
+}
+
+message BRSkill {
+    int32 id = 1;
+    int32 lv = 2;
+}
+
+// 战报中的Fighter
+message BRFighter {
+    int32   id  = 1;        // 1 攻方大营; 2 攻方中锋; 3 攻方前锋; 4 防守大营; 5 防守中锋; 6 防守前锋
+    int32   hero_id = 2;    // Fighter英雄ID
+}
+
+message BattleReport {
+    int64    occur_time         = 1; // 战斗发生时间  单位秒
+    repeated BRFighter fighters = 2; // 战斗参与者
+    string   txt_report         = 4; // 文字战报
+                                     // TODO: 统计数据
+}
+
+message BReportDetailNtf {
+    int64 report_id    = 1;
+    BattleReport report = 2;
+}
+
+message PowerRankItem {
+    int64   id      = 1;
+    string  name    = 2;
+    int32   power   = 3; // 势力值
+    int32   place   = 4; // 排名,从1开始
+    string  area    = 5; // 大陆
+}
+
+message MailAddr {
+    string name = 1; // 名称
+    int32 addr_type = 2;  // 1:玩家 2:工会 3:服务器 4:系统
+}
+
+// 
+message MailContent {
+    int64 sender_id        = 1; // 发送者id -- 非系统邮件使用
+    string sender_name     = 2; // 发送者名字 -- 非系统邮件使用
+    int32 sender_title     = 3; // 发送者职位 -- 非系统邮件, 联盟邮件/分组邮件使用
+    int32 content_type     = 4; // 内容格式: 0-纯文本;1-标题&内容需格式化;其他待定
+    string content_val     = 5; // 邮件内容: content_type=0时生效
+
+    // 以下内容, content_type=1时生效
+    string title_id                 = 10; // 标题id
+    string content_id               = 11; // 内容id
+    map<string,string> replaces     = 12; // 替换内容
+}
+
+message MailDetail {
+    int64 mail_id = 1;
+    MailAddr from = 2;
+    MailAddr to = 3;
+    int32 mail_type = 4;  // 1:玩家 2:工会 3:服务器 4:系统邮件
+    int64 created_at = 5;
+    string title = 6;
+    string content = 7; // MailContent类型的json串
+    repeated Item attachments = 8;
+    int32 status = 9;   //1:已读,2:加星标,4:已分享,8:附件已领取
+    int32 box_id = 10; // 0:收信箱, 13:收藏夹
+    int64 relation_id = 11; // 关联邮件id
+}
+
+message MailListNtf {
+   int32 refresh_type = 1;  // 1:全量刷新，2:增量刷新
+   repeated MailDetail mails = 2;
+}
+
+message MailAwardsNtf {
+    int64 mail_id = 1;
+    repeated Item awards = 2;
+}
+
+message MailBoxInfo {
+    int32 box_id    = 1;
+    int32 Unread    = 2;
+    int32 Total     = 3;
+}
+
+message MailBoxNtf {
+    repeated MailBoxInfo boxes = 1;
+}
+
+message ChatMessage {
+    MC_TYPE channel = 1;   // 聊天频道
+    string from  = 2;  // 发送者
+    string message = 3;  // 消息文本
+    string attachment = 4; // 附件
+    int64 created_at = 5;  // 发送时间
+    CHAT_STATUS status = 6;      // 状态：已读，未读
+}
+
+message ChatNtf {
+    REFRESH_TYPE refresh_type = 1;
+    repeated ChatMessage msg = 2;
+}
+
+// 玩家收藏的土地
+message CollectLandsNtf {
+    repeated int32 lands = 1;
+}
+
+// 玩家获得的物品
+message Item {
+    ITEM_TYPE typ = 1; // 物品类型
+    int32 id      = 2; // 物品类型下子id
+    int32 num     = 3; // 物品数量, 英雄/技能数量应该为1
+}
+
+// 抽奖的奖励
+message GachaAward {
+    Item expect_award = 1; // 抽到的物品
+    int64 rid         = 2; // ID
+}
+
+//
+message GachaPrice {
+    int32   id                     = 1; // id
+    Item    price                  = 2; // 价格
+    Item    next_price             = 3; // 下次价格
+    int32   free_count             = 4; // 剩余免费次数
+    int32   gacha_count            = 5; // 次数
+    int64   next_free_time         = 6; // 下次免费时间
+
+}
+
+//
+message GachaBag {
+    int64       id                             = 1; // ID
+    int32       package_id                     = 2; // 卡包ID
+    int32       count                          = 3; // 剩余次数 -1 无限制
+    int64       disappear_time                 = 4; // 消失时间  0 不消失
+    repeated    GachaPrice prices              = 5; // 价格列表
+    repeated    Item awards                    = 6; // 奖励列表
+    int32       active                         = 7; // 未激活原因，0， 激活
+    int32       level                          = 8; // 等级
+    int32       total_count                    = 9; // 总次数 -1 无限制
+    bool        daily                          = 10; // 日常卡包
+    int32       next_surprise                  = 11; // 下次四/五星剩余次数
+
+}
+
+//任务信息
+message Task {
+    int32 id                    = 1;   // ID
+    int32 type                  = 2;   // 任务类型
+    repeated int32 finid        = 3;   // 完成属性id
+    int32 fintype               = 4;   // 完成类型
+    repeated int32 fincnt       = 5;   // 完成数量
+    repeated int32 count        = 6;   // 当前计数
+    repeated Item award         = 7;   // 奖励
+    int32 state                 = 8;   // 任务状态, 1:未暴露, 2:进行中, 3:已完成, 4:已领奖
+    int32 chapterid             = 9;   // 序列id
+}
+
+//增加，更新单个或多个task
+message TasksNtf {
+    repeated Task add_tasks = 1 ;
+    repeated Task sub_tasks = 2 ;
+    repeated Task ref_tasks = 3 ;
+}
+
+// 市场
+message MarketItem{
+    int32            id       = 1; // 商品id
+    repeated Item    goods    = 2; // 商店提供
+    repeated Item    price    = 3; // 玩家提供(折扣后价格)
+    int32            discount = 4; // 折扣(显示用)
+    bool             sold     = 5; // 是否售出
+}
+
+message Market{
+             int32      id        = 1;
+             int32      freshCost = 2; // 刷新 整个市场花费 -1 表示不可再刷新
+    repeated MarketItem market    = 3;
+             int64      lasttime  = 4; // 上次刷新的时间
+             int64      cd        = 5; // 到下次更新时间倒计时(秒)
+}
+
+//
+message MarketsNtf{
+    repeated Market markets = 1;
+}
+
+// 税收
+message TaxNtf{
+    int32   tax             = 1;  // 当前税收能获得的 钱
+    int32   npcTax          = 2;  // NPC城皮税收加成
+    repeated int32 taxValue = 3;  // 一天税收值的记录
+    repeated int64 taxTime  = 4;  // 一天税收时间的记录
+}
+
+message GuardianTroopNtf{
+    repeated Fighter fighters = 1;
+}
+
+// 通用奖励Ntf
+message AwardNtf{
+    repeated Item awards = 1; // 奖励物品
+}
+
+// 战斗奖励Ntf
+message BattleAwardNtf{
+    repeated Item awards = 1; // 奖励物品
+    BATTLE_AWARD_TYPE type = 2; // 奖励类型
+}
+
+// 视野数据
+message Vision {
+    int32 center = 1; // 视野中心点
+    int32 radius = 2; // 视野半径
+    int32 op     = 3; // 1 添加视野，2 删除视野
+}
+
+message VisionsNtf{
+    repeated Vision visions = 1;
+}
+
+// 玩家联盟申请
+message ApplyUnion {
+    int64    union_id    = 1;
+    int64    time        = 2; // 申请时间
+}
+
+// 玩家收到的联盟邀请
+message UnionInvite {
+    int64    union_id    = 1;
+    int64    time        = 2; // 邀请时间
+}
+
+// 玩家联盟 Player.PlayerUnion
+message PlayerUnion {
+    int64    union_id                    = 1;
+    int32    title_id                   = 2;  // 职位id
+    int64    last_quit_at               = 3;  // 玩家上一次退出联盟时间
+    repeated ApplyUnion applies         = 4;  // 玩家全部的有效申请
+    repeated UnionInvite invites        = 5;  // 玩家全部的有效邀请
+    repeated UnionRelation relations    = 6;  // 联盟关系
+    repeated UnionMark marks            = 7;  // 联盟标记
+}
+// 玩家联盟 Player.PlayerUnion
+message PlayerUnionNtf {
+    PlayerUnion union           =1;
+ }
+ // 玩家沦陷
+ message FallenInfo {
+    int64    union_id       = 1; // 被联盟沦陷
+    int64    time           = 2; // 被沦陷时间
+    int32    revolt_res     = 3; // 反叛剩余需要缴纳的资源量
+    int32    revolt_res_max = 4; // 反叛全部资源
+    int64    FallenId       = 5; // 沦陷玩家id
+    string   FallenName     = 6; // 沦陷玩家名字
+    string   FallenUnion    = 7; // 沦陷联盟名字
+}
+
+message SlaveInfo {
+    int64     slave_id    = 1; // 被沦陷的id
+    string    slave_name  = 2; // 被沦陷名字
+    string    slave_union = 3; // 被沦陷的玩家联盟名字
+}
+
+// 联盟盟主禅让 Union.UnionDemise
+message UnionDemise {
+    int64    target_id   = 1; // 禅让成员id
+    int64    time        = 2; // 发起时间
+}
+
+// 联盟旗帜 Union.UnionFlag
+message UnionFlag {
+    int32    color       = 1; // 颜色
+    int32    shape       = 2; // 形状
+    int32    pattern     = 3; // 图案
+    int32    horn        = 4; // 角
+}
+
+// 联盟玩家 Union.UnionPlayer
+message UnionPlayer {
+    int64    player_id   = 1; // 成员id
+    int32    avatar_id   = 2; // 头像id
+    string   name        = 3; // 成员name
+    int32    title_id    = 4; // 职位id
+    int32    power       = 5; // 势力值
+    string   area        = 6; // 所在区域
+    int32    pos         = 7; // 位置坐标
+    int32    contribution= 8; // 贡献值
+    int32    glory       = 9; // 荣誉值
+}
+
+// 联盟申请 Union.ApplyPlayer
+message ApplyPlayer {
+    int64    player_id   = 1; // 申请玩家id
+    string   name        = 2; // 玩家名
+    int64    time        = 3; // 申请时间
+    int32    power       = 4; // 玩家势力值
+    int32    pos         = 5; // 玩家位置
+    string   area        = 6; // 玩家所属区域
+}
+
+// 联盟关系 Union.UnionRelation
+message UnionRelation {
+    int64    union_id       = 1;
+    int32    relation_type  = 2;  // 关系类型
+    int64    time           = 3;  // 关系设置时间
+}
+
+// 联盟标记 Union.UnionMark
+message UnionMark {
+    int32    pos            = 1;  // 标记位置
+    string   name           = 2;  // 标记名
+    string   content        = 3;  // 标记内容
+}
+
+// 联盟城池 Union.UnionCity
+message UnionCity {
+    int32    pos            = 1;  // 城池位置
+    string   name           = 2;  // 城池名
+    int32    level          = 3;  // 城池等级
+    int64    time           = 4;  // 占领时间
+}
+
+// 联盟日志 Union.UnionLog
+message UnionLog {
+    int32    type           = 1;  // 日志类型：事件、人员、战斗、关系
+    int32    sub_type       = 2;  // 每个类型下对应的子类型
+    int64    time           = 3;  // 发生时间
+    string   subject        = 4;  // 事件主语
+    string   object1        = 5;  // 事件宾语1（可以没有）
+    string   object2        = 6;  // 事件宾语2（可以没有）
+}
+
+// 联盟成员：每小时资源加成abs值（粮食、石料、木材、铁矿）
+message UnionResProAbs {
+    int32    res_id         = 1;  // 资源类型
+    int32    abs_value      = 2;  // 每小时产量加成值
+}
+
+// 联盟成员：每小时资源加成pct值（粮食、石料、木材、铁矿）
+message UnionResProPct {
+    int32    res_id         = 1;  // 资源类型
+    int32    pct_value      = 2;  // 每小时产量加成值
+}
+
+// 联盟
+message Union {
+    int64       union_id    = 1;  // 联盟id
+    string      union_name  = 2;  // 联盟name
+    string      nick_name   = 3;  // 简称
+    string      area        = 4;  // 所在区域
+    int32       pos         = 5;  // 位置坐标
+    int32       level       = 6;  // 联盟等级
+    int32       exp         = 7;  // 经验值
+    int32       power       = 8;  // 势力值
+    int32       city_num    = 9;  // 城池数
+    int32       num         = 10; // 联盟成员数
+    int32       max_num     = 11; // 最大成员数
+    repeated    UnionResProAbs res_abs  = 12; // 每小时资源加成值
+    repeated    UnionResProPct res_pct  = 13; // 每小时资源加成百分比
+    int32       apply_limit = 14; // 申请条件
+    int32       language    = 15; // 联盟语言
+    string      desc        = 16; // 联盟公告
+    UnionFlag   flag        = 17; // 联盟旗帜
+    UnionDemise demise      = 18; // 联盟盟主禅让
+    UnionPlayer leader      = 19; // 盟主信息
+    bool        has_detail  = 20;             // applies，memebers，relations，marks，cities，logs字段是否有意义
+    repeated    ApplyPlayer applies     = 21; // 玩家申请
+    repeated    UnionPlayer members     = 22; // 成员信息
+    repeated    UnionRelation relations = 23; // 联盟关系
+    repeated    UnionMark marks         = 24; // 联盟标记
+    repeated    UnionCity cities        = 25; // 联盟城市
+    repeated    UnionLog logs           = 26; // 联盟日志
+    int64       dissolve_at = 27; // 联盟解散时间
+}
+
+// 联盟信息，包含距离信息
+message UnionInfo {
+    Union union             = 1;
+    int32 distance          = 2; // 距离类型，0-近，1-中，2-远
+}
+
+// 联盟信息列表
+message UnionNtf {
+    repeated UnionInfo unions = 1;
+}
+
+// 联盟将某个联盟设置为敌对、友好、或无关系，广播给联盟在线成员的ntf
+message UnionRelationBroadcastNtf {
+    int64 union_id = 1; // 被设置关系的联盟id
+}
+
+// 玩家进入、离开出联盟、玩家被沦陷（非全盟沦陷），脱离沦陷时，
+// 广播给（前）联盟在线盟友、将自己所在（前）联盟设置为友盟、敌盟的联盟在线成员，将自己沦陷的（前）联盟在线成员的ntf
+message UnionPlayerBroadcastNtf {
+    int64 player_id = 1;
+}
+
+// 全盟沦陷时，广播给联盟在线盟友、将自己联盟设置为友盟、敌盟的联盟在线成员，将自己沦陷的联盟在线成员的ntf
+message UnionFallenBroadcastNtf {
+    int64 union_id = 1;
+}
+
+message LandBasic {
+    int32 pos               = 1; // 坐标
+    ENTITY_TYPE entity_type = 2; // 类型 主城城区 分城 要塞...
+    int32 durable           = 3; // 耐久度
+    int64 giveup_endat      = 4; // 放弃开始的时间
+    string name             = 5; // 要塞、分城会有，单独获取 名称
+}
+
+// 玩家个人土地 信息
+message LandsBasicNtf {
+    repeated LandBasic land_basic = 1;
+}
+
+// 战役
+message Conflict {
+    CONFLICT_TYPE typ   = 1; // 类型
+    int32 dmg           = 2; // 造成的伤害
+    int32 pos           = 3; // 产生战役的位置
+}
+
+// 在缩略图显示
+message NpcCityBrief {
+    int32 pos           = 1; // 城池显示
+    int64 union_id      = 2; // 被占领的联盟id
+    int32 cur_durable   = 3; // 当前耐久度
+    int32 max_durable   = 4; // 最大耐久度
+}
+
+message FallenNoticeNtf {
+    int64  fallen_id         = 1;   //被沦陷方
+    string fallen_name       = 2;
+    string fallen_union      = 3;
+    int64  fallenby_id       = 4;   //沦陷方
+    string fallenby_name     = 5;
+    string fallenby_union    = 6;
+    int64  time              = 7;   //沦陷时间
+}
+
+message FallenInfoNtf {
+    int64    union_id       = 1; // 被联盟沦陷
+    int64    time           = 2; // 被沦陷时间
+    int32    revolt_res     = 3; // 反叛已缴纳的资源量
+    int32    revolt_max_res = 4; // 反叛需要的总资源
+}
+
+// 演武地块信息
+message DrillTile {
+    int32          pos         = 1; // 坐标  
+    float          atk_cost    = 2; // 攻击部队cost
+    int32          atk_number  = 3; // 攻击部队英雄数量
+    int32          atk_hp      = 4; // 攻击部队单人血量
+    int32          durable     = 5; // 土地当前耐久
+    int32          max_durable = 6; // 土地初始耐久
+    bool           is_end      = 7; // 是否为最后一块土地
+    bool           is_fortress = 8; // 是否为要塞
+    repeated int32 def_troops  = 9; // 土地自带守军
+    repeated Item  awards      = 10; // 土地奖励    
+}
+
+// 通关记录
+message DrillPassCount {
+    int32 drill_id = 1; // 关卡ID
+    int32 count    = 2; // 通关次数
+}
+
+message DrillBReportNtf {
+    int64 report_id          = 1;
+    int32 pos                = 2;
+    bool is_attacker         = 3;
+    BATTLE_RESULT result     = 4;
+    BRTroopBrief attacker    = 5;
+    BRTroopBrief defender    = 6;
+    int64 time               = 7;
+    int64 battle_id          = 8;  // 战斗编号，用于客户端合并连续战斗
+    bool is_occupy           = 9;  // atk是否占领土地
+    int64 detail_report_id   = 10; // 回放战报ID
+    ENTITY_TYPE dst_type     = 11; // 用于显示简要的目的地属性
+    int32 exp_get            = 12; // 单个英雄获得的经验值
+    repeated Item awards     = 13; // 获得的奖励
+    repeated Item supply     = 14; // 获得的奖励
+    int32 sub_durable        = 15; // 拆除的耐久度   
+}
+
+message AffairNtf {
+    int64   move_city_at          = 1; // 迁城时间
+    InvincibleInfo invincible     = 2; // 坚守信息
+}
+
+// 坚守信息
+message InvincibleInfo {
+    int32 state     = 1; // 坚守状态
+    int64 end_at    = 2; // 坚守状态完成时间
+}
+
+// 贼兵信息
+message RobberNtf {
+    int32 pos          = 1; // 贼兵位置
+    int64 refresh_time = 2; // 贼兵刷新时间 ms
+}
+
+// 删除贼兵
+message RemoveRobberNtf {
+    int32 pos = 1; // 贼兵位置
+}
+
+// 新手引导
+message Tutorial {
+    bool finshed     = 1;  // 是否完成
+    string log       = 2;  // 新手引导日志日志
+}
+
+// 天下大势
+message EpicInfo {
+    int32 id                        = 1;
+    int32 state                     = 2;
+    int32 cur                       = 3;
+    repeated EpicUnionInfo cur_arry = 4;
+    int64 end_at                    = 5;
+    int32 player_state              = 6;
+}
+
+message EpicNtf {
+    repeated EpicInfo   epic        = 1;
+}
+
+message EpicUnionInfo {
+    int64 unionId       = 1;
+    string unionName    = 2;
+}
+
+// 个人排行榜结构定义
+message PersonBoard {
+    string name           = 1; // 势力名
+    int64  player_id      = 2; // 玩家ID
+    int32  state_id       = 3; // 所属州ID
+    int32  sub_city_count = 4; // 分城数量
+    int32  land_count     = 5; // 总领地数量
+    int32  power_value    = 6; // 个人势力值
+}
+
+// 同盟排行榜结构定义
+message UnionBoard {
+    string name         = 1; // 同盟名
+    int64  union_id     = 2; // 同盟ID
+    int32  level        = 3; // 同盟等级
+    int32  state_id     = 4; // 所属州ID
+    int32  member_count = 5; // 成员数量
+    int32  city_count   = 6; // 城池数量
+    int32  power_value  = 7; // 势力值   
+}
+
+// 城池占领信息
+message NpcCityInfoNtf {
+    repeated NpcCityOccupy city_occupy = 1;
+}
+
+message NpcCityOccupy {
+    int32 city_id       = 1;
+    int64 union_id      = 2;
+}

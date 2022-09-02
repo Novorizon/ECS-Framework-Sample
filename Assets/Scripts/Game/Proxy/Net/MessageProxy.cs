@@ -1,8 +1,9 @@
 ﻿using System;
 using Google.Protobuf;
-using Cspb;
 using PureMVC.Patterns.Proxy;
 using Net;
+using System.IO;
+using System.Net.Sockets;
 
 namespace Game
 {
@@ -21,76 +22,187 @@ namespace Game
         private MSG_FREQUENCY_TYPE m_frequency = MSG_FREQUENCY_TYPE.IMMEDIATE;
         private static int CONTROL_TIME = 30 * 1000; // millisecond
 
-        NetProxy netProxy = null;
-        CharacterProxy characterProxy = null;
+        HandlerProxy handlerProxy = null;
+
+        TCPClientState client => NetProxy.Client;
 
         public MessageProxy() : base(NAME) { }
 
         public override void OnRegister()
         {
             base.OnRegister();
-            netProxy = Facade.RetrieveProxy(NetProxy.NAME) as NetProxy;
-            characterProxy = Facade.RetrieveProxy(CharacterProxy.NAME) as CharacterProxy;
+            handlerProxy = Facade.RetrieveProxy(HandlerProxy.NAME) as HandlerProxy;
         }
 
         public override void OnRemove()
         {
         }
 
-
-        private bool IsControlSendTimeOk()
+        /// 发送SOCKET消息
+        public void SendMessage( IMessage obj)
         {
-            long spend = DateTime.Now.Millisecond - m_LastSendTime.Millisecond;
-            if (spend > CONTROL_TIME)
+            if (!ProtoUtils.ContainProtoType(obj.GetType()))
             {
-                return true;
+                //NetDebug.instance.LogError("不存协议类型");
+                return;
             }
-            return false;
+
+            ByteBuffer buff = new ByteBuffer();
+            uint protoId = ProtoUtils.GetProtoIdByProtoType(obj.GetType());
+
+            byte[] result;
+            using (MemoryStream ms = new MemoryStream())
+            {
+                obj.WriteTo(ms);
+                result = ms.ToArray();
+            }
+
+            Int32 lengh = (Int32)(result.Length + 4);
+            //Debug.Log("lengh" + lengh + ",protoId" + protoId);
+            buff.WriteInt((Int32)lengh);
+
+
+            buff.WriteInt((Int32)protoId);
+
+            buff.WriteBytes(result);
+            SendMessage(buff);
         }
 
-        public void SendMessage(IMessage obj, MSG_FREQUENCY_TYPE _fre = MSG_FREQUENCY_TYPE.IMMEDIATE)
+
+        /// 发送消息
+        public void SendMessage(ByteBuffer buffer)
         {
-            bool _CanSendGameReq = true;
-            if (!characterProxy.IsLogined())
+            MemoryStream ms = null;
+            BinaryWriter writer = null;
+            try
             {
-                _CanSendGameReq = false;
-                if (obj is AuthReq || obj is HeartBeatReq || obj is UdidReq || obj is CharCreateReq || obj is CharLoginReq || obj is GetGsReq || obj is KeyExchageReq)
-                    _CanSendGameReq = true;
-            }
-            else
-            {
-                if (!netProxy.IsNetConnected())
+                using (ms = new MemoryStream())
                 {
-                    _CanSendGameReq = false;
-                    NetDebug.instance.LogWarning("Socket is not connect, not sending req!!!");
+                    byte[] message = buffer.ToBytes();
+                    ms.Position = 0;
+                    writer = new BinaryWriter(ms);
+                    writer.Write(message);
+                    writer.Flush();
+
+                    if (client != null && client.TcpClient!=null&& client.TcpClient.Connected && client.NetworkStream != null)
+                    {
+                        byte[] payload = ms.ToArray();
+                        client.NetworkStream.BeginWrite(payload, 0, payload.Length, OnWrite, null);
+                    }
+                    else
+                    {
+                        OnError("WriteMessage Error");
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                OnError("WriteMessage Error " + ex.Message.ToString());
+            }
+            finally
+            {
+                if (writer != null) writer.Dispose();
+                if (ms != null) ms.Dispose();
             }
 
-            if (_CanSendGameReq)
+            buffer.Close();
+        }
+
+
+
+        /// 向链接写入数据流
+        void OnWrite(IAsyncResult ar)
+        {
+            try
             {
-                if (_fre == MSG_FREQUENCY_TYPE.TIME_CONTROLED || m_frequency == MSG_FREQUENCY_TYPE.TIME_CONTROLED)
-                {
-                    _CanSendGameReq = IsControlSendTimeOk();
-                }
+                client.NetworkStream.EndWrite(ar);
             }
-            if (_CanSendGameReq)
+            catch (Exception ex)
             {
-                netProxy.SendMessage(obj);
-                m_LastSendTime = DateTime.Now;
-                if (obj is HeartBeatReq)
+                OnError("OnWrite Error " + ex.Message.ToString());
+            }
+        }
+
+        /// 接收到消息
+        public void ReceiveMessage(int count)
+        {
+            Log(" ReceiveMessage");
+
+            byte[] bytes = new byte[count];
+            Buffer.BlockCopy(client.Buffer, 0, bytes, 0, count);
+
+            MemoryStream memStream = new MemoryStream();
+            memStream.Seek(0, SeekOrigin.End);
+            memStream.Write(bytes, 0, count);
+            memStream.Seek(0, SeekOrigin.Begin);            //Reset to beginning
+
+            BinaryReader reader = new BinaryReader(memStream);
+
+            while (RemainingBytes(memStream) > 4)
+            {
+                Int32 messageLen = reader.ReadInt32();
+                if (RemainingBytes(memStream) >= messageLen)
                 {
-                    NetDebug.instance.Log("Send " + obj.GetType().ToString(), NET_DEBUG_MESSAGE_TYPE.HEART);
+                    MemoryStream ms = new MemoryStream();
+                    BinaryWriter writer = new BinaryWriter(ms);
+                    writer.Write(reader.ReadBytes(messageLen));
+                    ms.Seek(0, SeekOrigin.Begin);
+                    OnReceivedMessage( ms);
                 }
                 else
                 {
-                    NetDebug.instance.Log("Send " + obj.GetType().ToString(), NET_DEBUG_MESSAGE_TYPE.SEND_REQ);
+
+                    memStream.Position = memStream.Position - 4;
+                    break;
                 }
             }
-            else
-            {
-                NetDebug.instance.Log("Character is not logged in, Req " + obj.GetType().ToString() + " is not Sent", NET_DEBUG_MESSAGE_TYPE.SEND_REQ);
-            }
+            byte[] leftover = reader.ReadBytes((int)RemainingBytes(memStream));
+            memStream.SetLength(0);
+            memStream.Write(leftover, 0, leftover.Length);
 
+        }
+
+
+        /// 剩余的字节
+        private long RemainingBytes(MemoryStream memStream)
+        {
+            return memStream.Length - memStream.Position;
+        }
+
+        /// 接收到消息
+        void OnReceivedMessage(MemoryStream ms)
+        {
+            try
+            {
+                BinaryReader r = new BinaryReader(ms);
+
+                byte[] message = r.ReadBytes((int)(ms.Length - ms.Position));
+                ByteBuffer buffer = new ByteBuffer(message);
+
+                int mainId = buffer.ReadInt();
+                int pbDataLen = message.Length - 4;
+                byte[] pbData = buffer.ReadBytes(pbDataLen);
+
+                //Type protoType = ProtoDic.GetProtoTypeByProtoId((uint)mainId);
+                handlerProxy.DispatchProto((uint)mainId, pbData);
+            }
+            catch (Exception ex)
+            {
+                OnError("OnReceivedMessage(): " + ex.Message.ToString());
+            }
+        }
+
+
+
+
+        void OnError(string msg)
+        {
+            Console.WriteLine(msg);
+        }
+
+        void Log(string str)
+        {
+            Console.WriteLine(str);
 
         }
     }

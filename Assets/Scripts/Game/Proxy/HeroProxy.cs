@@ -1,10 +1,6 @@
-using Cspb;
-using Database;
 using DataBase;
 using PureMVC.Patterns.Proxy;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
 
 namespace Game
@@ -23,7 +19,7 @@ namespace Game
         {
             netProxy = Facade.RetrieveProxy(NetProxy.NAME) as NetProxy;
 
-            netProxy.RegisterHandler(typeof(AuthAck), HandlerFunc);
+            //netProxy.RegisterHandler(typeof(AuthAck), HandlerFunc);
 
             data = new HeroVO();
             GetPrefs();
@@ -36,7 +32,6 @@ namespace Game
 
         protected void HandlerFunc(object data)
         {
-            AuthAck ack = data as AuthAck;
         }
 
         public void GetPrefs()

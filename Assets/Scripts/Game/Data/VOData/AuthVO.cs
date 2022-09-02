@@ -1,8 +1,5 @@
 using System.Collections.Generic;
-using Mono.Data.Sqlite;
 using System;
-using UnityEngine;
-using Cspb;
 
 namespace Game
 {
@@ -10,7 +7,6 @@ namespace Game
     {
         public string error = "";
         public List<CharacterVO> characters = new List<CharacterVO>();
-        public List<Server> servers = new List<Server>();
         public long accountId = 0;
         public string accessToken = "";
         public long tokenExpire = 0;

@@ -1,12 +1,8 @@
-
 using ECS;
 using Game.Input;
 using MVC;
 using MVC.Patterns;
-using MVC.Providers;
 using MVC.UI;
-using System.Collections;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace Game
@@ -54,7 +50,7 @@ namespace Game
             base.OnStart();
 
             SendNotification(RemoveMediatorCommand.Name, this, StartupMediator.NAME);
-            
+
 
             GameInput.Controller.Default.Escape.started += (ctx) =>
             {
@@ -90,9 +86,17 @@ namespace Game
 
         protected override void InitializeProxy()
         {
+            Facade.RegisterProxy(new HandlerProxy());
             Facade.RegisterProxy(new NetProxy());
+
+            Facade.RegisterProxy(new CharacterProxy());
+            Facade.RegisterProxy(new MessageProxy());
+            Facade.RegisterProxy(new AuthProxy());
+
             Facade.RegisterProxy(new HeroProxy());
             Facade.RegisterProxy(new QuestProxy());
+            NetProxy netProxy = Facade.RetrieveProxy(NetProxy.NAME) as NetProxy;
+            netProxy.Start();
         }
 
         protected override void InitializeSystem()

@@ -1,8 +1,7 @@
-﻿using UnityEngine;
-using Cspb;
-using System;
+﻿using System;
 using PureMVC.Patterns.Proxy;
-using Net;
+using Game.Protobuffer;
+using UnityEngine;
 
 namespace Game
 {
@@ -14,6 +13,7 @@ namespace Game
         NetProxy netProxy = null;
         CharacterProxy characterProxy = null;
         MessageProxy messageProxy = null;
+        HandlerProxy handlerProxy = null;
 
         public override void OnRegister()
         {
@@ -21,50 +21,36 @@ namespace Game
             characterProxy = Facade.RetrieveProxy(CharacterProxy.NAME) as CharacterProxy;
             netProxy = Facade.RetrieveProxy(NetProxy.NAME) as NetProxy;
             messageProxy = Facade.RetrieveProxy(MessageProxy.NAME) as MessageProxy;
+            handlerProxy = Facade.RetrieveProxy(HandlerProxy.NAME) as HandlerProxy;
 
-            netProxy.RegisterHandler(typeof(AuthAck), HandlerFunc);
-            netProxy.RegisterHandler(typeof(GetGsAck), HandleGsAck);
-            netProxy.RegisterHandler(typeof(KeyExchageAck), HandleKeyAck);
+            handlerProxy.RegisterHandler(typeof(S2C_LoginAck), HandleLoginAck);
         }
 
         public override void OnRemove()
         {
         }
 
-
-        private void HandleKeyAck(object data)
+        public void Login()
         {
-            if (data is KeyExchageAck _keyAck)
-            {
-                byte[] sessionKey = _keyAck.Key.ToByteArray();
-                netProxy.SessionKey = EncryptHelper.AESDecrypt(sessionKey, netProxy.TempKey);
-            }
+            C2S_Login req = new C2S_Login();
+            messageProxy.SendMessage(req);
         }
 
-        private void HandleGsAck(object data)
-        {
-            if (data is GetGsAck _gsack)
-            {
-                //netProxy.authVO.servers = netProxy.authVO.SetServerList(_gsack.Servers);
 
-                //LoginMenu _loginMenu = (LoginMenu)UIManager.GetInstance().GetUIFormByName("LoginMenu");
-                //if (_loginMenu != null && _loginMenu.isActiveAndEnabled)
-                //{
-                //    UIGameLoginArgs args = new UIGameLoginArgs()
-                //    {
-                //        loginstep = "info",
-                //        characterlist = netProxy.CurrentAuthInfo.characters,
-                //        serverlist = netProxy.CurrentAuthInfo.servers
-                //    };
-                //    UIEventManager.GetInstance().DispatchEvent(UIEventManager.UIEventType.GameLogin, args);
-                //}
-            }
+        private void HandleLoginAck(object data)
+        {
+            //if (data is KeyExchageAck _keyAck)
+            //{
+            //    byte[] sessionKey = _keyAck.Key.ToByteArray();
+            //    netProxy.SessionKey = EncryptHelper.AESDecrypt(sessionKey, netProxy.TempKey);
+            //}
         }
+
 
         protected void HandlerFunc(object data)
         {
-            AuthAck ack = data as AuthAck;
-            NetDebug.instance.Log("AuthMsg: " + ack.ToString(), NET_DEBUG_MESSAGE_TYPE.NORMAL);
+            //AuthAck ack = data as AuthAck;
+            //NetDebug.instance.Log("AuthMsg: " + ack.ToString(), NET_DEBUG_MESSAGE_TYPE.NORMAL);
             //netProxy.LastAuthInfo = netProxy.CurrentAuthInfo.Clone();
             //netProxy.CurrentAuthInfo.SetInfo(ack);
 
@@ -139,12 +125,11 @@ namespace Game
         }
         public void SendKeyExchangeReq()
         {
-            KeyExchageReq req = new KeyExchageReq
-            {
-
-                Key = Google.Protobuf.ByteString.CopyFrom(EncryptHelper.RSAEncrypt(netProxy.TempKey))
-            };
-            messageProxy.SendMessage(req);
+            //KeyExchageReq req = new KeyExchageReq
+            //{
+            //    Key = Google.Protobuf.ByteString.CopyFrom(EncryptHelper.RSAEncrypt(netProxy.TempKey))
+            //};
+            //messageProxy.SendMessage(req);
         }
 
         //public void SendGsReq()
@@ -158,37 +143,38 @@ namespace Game
 
         public void SendAuthReq()
         {
-            //try
-            //{
-            //    AuthReq req = new AuthReq
-            //    {
-            //        CInfo = GameClientInfo.NetClientInfo,
-            //        Type = "anonymous",
-            //        Passport = GameClientInfo.NetClientInfo.Udid,//"a1_anonymous_1",
-            //        Password = "123456"
-            //    };
-            //    SendTos(req);
-            //}
-            //catch (Exception ex)
-            //{
-            //    NetDebug.instance.LogError("SendAuthReq Error: " + ex.Message.ToString());
-            //}
+            try
+            {
+                C2S_Login req = new C2S_Login
+                {
+                    PlayerId = 1,
+                };
+
+                if (messageProxy == null)
+                    messageProxy = Facade.RetrieveProxy(MessageProxy.NAME) as MessageProxy;
+
+                messageProxy.SendMessage(req);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("SendAuthReq Error: " + ex.Message.ToString());
+            }
 
 
         }
 
         public void SendCreateCharacterReq(string access_token, long account_id, int server_id)
         {
-            CharCreateReq req = new CharCreateReq
-            {
-                AccessToken = access_token,
-                AccountId = account_id,
-                ServerId = server_id,
-                Name = "PC_" + (DateTime.Now.ToFileTime() % 10000000).ToString(),
-                //CInfo = GameClientInfo.NetClientInfo
-            };
+            //CharCreateReq req = new CharCreateReq
+            //{
+            //    AccessToken = access_token,
+            //    AccountId = account_id,
+            //    ServerId = server_id,
+            //    Name = "PC_" + (DateTime.Now.ToFileTime() % 10000000).ToString(),
+            //    //CInfo = GameClientInfo.NetClientInfo
+            //};
 
-            messageProxy.SendMessage(req);
+            //messageProxy.SendMessage(req);
 
             //netProxy.LastCharInfo = netProxy.CurrentCharInfo.Clone();
             //netProxy.CurrentCharInfo.SetServerId(server_id);
@@ -196,24 +182,24 @@ namespace Game
             //netProxy.CurrentAuthInfo.udid = GameClientInfo.Udid;
             //netProxy.CurrentCharInfo.serverId = server_id;
             //netProxy.CurrentCharInfo.charLogined = false;           
-            NetDebug.instance.LogWarning("send create char!!!!!");
+            Debug.LogWarning("send create char!!!!!");
         }
         public void SendCharLoginReq(string access_token, long account_id, int server_id, long player_id)
         {
 
-            CharLoginReq req = new CharLoginReq
-            {
-                AccessToken = access_token,
-                AccountId = account_id,
-                ServerId = server_id,
-                //Name = GameClientInfo.NetClientInfo.Udid,
-                //CInfo = GameClientInfo.NetClientInfo,
-                PlayerId = player_id
-            };
+            //CharLoginReq req = new CharLoginReq
+            //{
+            //    AccessToken = access_token,
+            //    AccountId = account_id,
+            //    ServerId = server_id,
+            //    //Name = GameClientInfo.NetClientInfo.Udid,
+            //    //CInfo = GameClientInfo.NetClientInfo,
+            //    PlayerId = player_id
+            //};
 
-            messageProxy.SendMessage(req);
+            //messageProxy.SendMessage(req);
 
-            NetDebug.instance.LogWarning("send login char!!!!!");
+            Debug.LogWarning("send login char!!!!!");
             //netProxy.LastCharInfo = netProxy.CurrentCharInfo.Clone();
             //netProxy.CurrentCharInfo.SetServerId(server_id);
             //netProxy.CurrentCharInfo.SetLogined(false);
@@ -228,18 +214,18 @@ namespace Game
         {
             if (_token.Length <= 0)
             {
-                NetDebug.instance.LogWarning("PN token length is 0, not sent!!");
+                Debug.LogWarning("PN token length is 0, not sent!!");
                 return;
             }
 
-            PNRegisterReq req = new PNRegisterReq
-            {
-                PushToken = _token,
-                PushType = _type
-            };
-            NetDebug.instance.LogWarning("Send PN token: " + req.PushToken.ToString());
+            //PNRegisterReq req = new PNRegisterReq
+            //{
+            //    PushToken = _token,
+            //    PushType = _type
+            //};
+            //NetDebug.instance.LogWarning("Send PN token: " + req.PushToken.ToString());
 
-            messageProxy.SendMessage(req);
+            //messageProxy.SendMessage(req);
         }
 
     }
